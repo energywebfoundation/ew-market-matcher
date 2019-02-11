@@ -1,6 +1,6 @@
 // Copyright 2018 Energy Web Foundation
 // This file is part of the Origin Application brought to you by the Energy Web Foundation,
-// a global non-profit organization focused on accelerating blockchain technology across the energy sector, 
+// a global non-profit organization focused on accelerating blockchain technology across the energy sector,
 // incorporated in Zug, Switzerland.
 //
 // The Origin Application is free software: you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details, at <http://www.gnu.org/licenses/>.
 //
-// @authors: slock.it GmbH, Heiko Burkhardt, heiko.burkhardt@slock.it
+// @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
 import * as EwAsset from 'ew-asset-registry-lib';
 import * as EwOrigin from 'ew-origin-lib';
@@ -21,7 +21,7 @@ import * as EwMarket from 'ew-market-lib';
 import { logger } from '..';
 import * as Winston from 'winston';
 import { Controller } from './Controller';
-import Web3 = require('web3');
+import Web3 from 'web3';
 import * as Conf from '../../conf.json';
 import { BlockchainDataSourceType, BlockchainDataSource } from '../schema-defs/MatcherConf';
 
@@ -41,12 +41,12 @@ export const initMatchingManager = async (
 
     // conf.logger.verbose('* Getting all consuming assets');
     // const consumingAssetList = (await EwAsset.ConsumingAsset.getAllAssets(conf));
-    // consumingAssetList.forEach(async (asset: EwAsset.ConsumingAsset.Entity) => 
+    // consumingAssetList.forEach(async (asset: EwAsset.ConsumingAsset.Entity) =>
     //     controller.registerConsumingAsset(asset as EwAsset.ConsumingAsset.Entity),
     // );
 
 
-    
+
     conf.logger.verbose('* Getting all active agreements');
     const agreementListLength = (await EwMarket.Agreement.getAgreementListLength(conf));
     for (let i = 0; i < agreementListLength; i++) {
@@ -64,7 +64,7 @@ export const initMatchingManager = async (
     for (let i = 0; i < supplyListLength; i++) {
         controller.registerSupply(await new EwMarket.Supply.Entity(i.toString(), conf).sync());
     }
-  
+
 };
 
 export const createBlockchainConf = async (
@@ -82,9 +82,9 @@ export const createBlockchainConf = async (
         blockchainSectionConfFile.originContractLookupAddress,
     );
     marketConf.certificateLogicInstance = originConf.certificateLogicInstance;
-    
+
     return {
-        
+
         blockchainProperties: marketConf,
         logger,
         offChainDataSource: {
@@ -117,13 +117,13 @@ export const initEventHandling = async (
     });
 
     // certificateContractEventHandler.onEvent('LogCertificateOwnerChanged' , async (event) => {
-        
+
     //     if (matcherAddress === event.returnValues._oldEscrow && matcherAddress !== event.returnValues._newEscrow) {
     //         console.log('\n* Event: LogCertificateOwnerChanged certificate escrow changed certificate id: ' + event.returnValues._certificateId);
-            
+
     //         // cobntroller.removeCertificate(parseInt(event.returnValues._certificateId, 10))
     //     }
-        
+
     // });
 
     // const demandContractEventHandler = new EwfCoo.ContractEventHandler(blockchainProperties.demandLogicInstance, currentBlockNumber);
@@ -144,7 +144,7 @@ export const initEventHandling = async (
 
     // const assetContractEventHandler = new EwfCoo.ContractEventHandler(blockchainProperties.producingAssetLogicInstance, currentBlockNumber);
 
-    // // assetContractEventHandler.onEvent('LogNewMeterRead', (event) => 
+    // // assetContractEventHandler.onEvent('LogNewMeterRead', (event) =>
     // //     cobntroller.match()
     // // )
 
@@ -157,7 +157,7 @@ export const initEventHandling = async (
 
     // assetContractEventHandler.onEvent('LogAssetSetActive' , async (event) => {
     //     console.log('\n* Event: LogAssetSetActive  asset: ' + event.returnValues._assetId);
-    
+
     //     const asset = await (new EwfCoo.ProducingAsset(event.returnValues._assetId, blockchainProperties)).syncWithBlockchain();
     //     cobntroller.registerProducingAsset(asset);
 
@@ -167,7 +167,7 @@ export const initEventHandling = async (
     //     console.log('\n* Event: LogAssetSetInactive asset: ' + event.returnValues._assetId);
 
     //     cobntroller.removeProducingAsset(parseInt(event.returnValues._assetId, 10));
-        
+
     // });
 
     // const consumingAssetContractEventHandler = new EwfCoo.ContractEventHandler(blockchainProperties.consumingAssetLogicInstance, currentBlockNumber);
@@ -188,7 +188,7 @@ export const initEventHandling = async (
 
     // consumingAssetContractEventHandler.onEvent('LogAssetSetActive' , async (event) => {
     //     console.log('\n* Event: LogAssetSetActive consuming asset: ' + event.returnValues._assetId);
-    
+
     //     const asset = await (new EwfCoo.ConsumingAsset(event.returnValues._assetId, blockchainProperties)).syncWithBlockchain();
     //     cobntroller.registerConsumingAsset(asset);
 
@@ -198,9 +198,9 @@ export const initEventHandling = async (
     //     console.log('\n* Event: LogAssetSetInactive consuming asset: ' + event.returnValues._assetId);
 
     //     cobntroller.removeConsumingAsset(parseInt(event.returnValues._assetId, 10));
-        
+
     // });
-    
+
     const eventHandlerManager = new EwGeneral.EventHandlerManager(4000, conf);
     // eventHandlerManager.registerEventHandler(consumingAssetContractEventHandler);
     // eventHandlerManager.registerEventHandler(demandContractEventHandler);

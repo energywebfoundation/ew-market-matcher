@@ -1,6 +1,6 @@
 // Copyright 2018 Energy Web Foundation
 // This file is part of the Origin Application brought to you by the Energy Web Foundation,
-// a global non-profit organization focused on accelerating blockchain technology across the energy sector, 
+// a global non-profit organization focused on accelerating blockchain technology across the energy sector,
 // incorporated in Zug, Switzerland.
 //
 // The Origin Application is free software: you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details, at <http://www.gnu.org/licenses/>.
 //
-// @authors: slock.it GmbH, Heiko Burkhardt, heiko.burkhardt@slock.it
+// @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
 import { Matcher } from './../Matcher/Matcher';
 import * as EwAsset from 'ew-asset-registry-lib';
@@ -33,7 +33,7 @@ export abstract class Controller {
         } else {
             const error = new Error();
             const errorAt = validationResult.errors
-                .map((validationError: Jsonschema.ValidationError, index: number) => 
+                .map((validationError: Jsonschema.ValidationError, index: number) =>
                     `\n${index}. error at ${JSON.stringify(validationError.instance)}`)
                 .reduce((previous: string, current: string) => previous += current);
             error.message = `${description} file is invalid ${LogSymbols.error} ${errorAt}`;
@@ -74,34 +74,34 @@ export abstract class Controller {
 
     abstract start(): void;
 
-    abstract async handleUnmatchedCertificate(certificate: EwOrigin.Certificate.Entity): Promise<void>; 
-    
+    abstract async handleUnmatchedCertificate(certificate: EwOrigin.Certificate.Entity): Promise<void>;
+
     abstract async registerProducingAsset(newAsset: EwAsset.ProducingAsset.Entity): Promise<void>;
-  
-    abstract async registerConsumingAsset(newAsset: EwAsset.ConsumingAsset.Entity): Promise<void>; 
+
+    abstract async registerConsumingAsset(newAsset: EwAsset.ConsumingAsset.Entity): Promise<void>;
 
     abstract async registerAgreement(aggreement: EwMarket.Agreement.Entity): Promise<void>;
 
     abstract async registerDemand(demand: EwMarket.Demand.Entity): Promise<void>;
-    
-    abstract async registerSupply(supply: EwMarket.Supply.Entity): Promise<void>; 
 
-    abstract async removeProducingAsset(assetId: string): Promise<void>; 
+    abstract async registerSupply(supply: EwMarket.Supply.Entity): Promise<void>;
+
+    abstract async removeProducingAsset(assetId: string): Promise<void>;
 
     abstract async removeConsumingAsset(assetId: string): Promise<void>;
 
-    abstract async removeAgreement(agreementId: string): Promise<void>; 
+    abstract async removeAgreement(agreementId: string): Promise<void>;
 
     abstract getProducingAsset(assetId: string): EwAsset.ProducingAsset.Entity;
 
     abstract getConsumingAsset(assetId: string): EwAsset.ConsumingAsset.Entity;
 
     abstract async createOrRefreshConsumingAsset(assetId: string): Promise<void>;
-    
+
     abstract async splitCertificate(certificate: EwOrigin.Certificate.Entity, whForFirstChils: number): Promise<void>;
 
     abstract async getCurrentPeriod(startDate: number, timeFrame: EwGeneral.TimeFrame): Promise<number>;
-    
+
     abstract getAgreement(agreementId: string): EwMarket.Agreement.Entity;
 
     abstract getDemand(demandId: string): EwMarket.Demand.Entity;

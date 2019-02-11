@@ -1,3 +1,19 @@
+// Copyright 2018 Energy Web Foundation
+// This file is part of the Origin Application brought to you by the Energy Web Foundation,
+// a global non-profit organization focused on accelerating blockchain technology across the energy sector,
+// incorporated in Zug, Switzerland.
+//
+// The Origin Application is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// This is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY and without an implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details, at <http://www.gnu.org/licenses/>.
+//
+// @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
+
 import { Controller} from '../controller/Controller';
 import { logger } from './../index';
 import * as EwOrigin from 'ew-origin-lib';
@@ -30,13 +46,13 @@ export const filterAgreements = async (
             originator: null,
             start: agreement.offChainProperties.start,
         };
-   
+
         if (await checkFit(controller, loggerPrefix, filterSpec, certificate)) {
             filteredAgreements.push(agreement);
         }
     }
-    
-    logger.verbose(filteredAgreements.length + ' from ' + 
+
+    logger.verbose(filteredAgreements.length + ' from ' +
         agreements.length + ' are a possible fit for certificate #' + certificate.id);
     return filteredAgreements;
 };
@@ -45,7 +61,7 @@ const checkProperty = (spec: any, real: any, loggerPrefix: string, propertyName:
 
     if (spec !== null && spec !== undefined) {
         const output = spec === real;
-        logger.debug(loggerPrefix + propertyName + ' equals specification: ' + output + 
+        logger.debug(loggerPrefix + propertyName + ' equals specification: ' + output +
             ' spec: ' + spec.toString() + ', asset: ' + real.toString());
         return output;
 
@@ -62,12 +78,12 @@ const checkFit = async (
     filterSpec: FilterSpec ,
     certificate: EwOrigin.Certificate.Entity,
 ): Promise<boolean> => {
-    
+
     let fit = true;
     const currentTime = await controller.getCurrentDataSourceTime();
     const asset = await controller.getProducingAsset(certificate.assetId.toString());
 
-    logger.debug(loggerPrefix 
+    logger.debug(loggerPrefix
         + 'originator: ' + filterSpec.originator  + ', '
         + 'asset type: ' + filterSpec.demand.offChainProperties.assettype + ', '
         + 'compliance: ' + filterSpec.demand.offChainProperties.registryCompliance + ', '
@@ -75,7 +91,7 @@ const checkFit = async (
         + 'region: ' + filterSpec.demand.offChainProperties.locationRegion + ', '
         + 'producing asset: ' + filterSpec.demand.offChainProperties.productingAsset,
     );
-    
+
     if (filterSpec.end < currentTime || filterSpec.start > currentTime) {
 
         fit = false;
@@ -86,7 +102,7 @@ const checkFit = async (
     fit = fit &&
         checkProperty(
             filterSpec.originator,
-            asset.owner, 
+            asset.owner,
             loggerPrefix,
             'originator',
         ) &&
