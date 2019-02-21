@@ -14,12 +14,12 @@
 //
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
-import { Matcher } from './../Matcher/Matcher';
+import { Matcher } from '../matcher/Matcher';
 import * as EwAsset from 'ew-asset-registry-lib';
 import * as EwOrigin from 'ew-origin-lib';
 import * as EwMarket from 'ew-market-lib';
 import * as Filter from '../matcher/Filter';
-import { logger } from '..';
+import { logger } from '../Logger';
 import * as Jsonschema from 'jsonschema';
 import * as LogSymbols from 'log-symbols';
 import * as EwGeneral from 'ew-utils-general-lib';
@@ -56,7 +56,7 @@ export abstract class Controller {
     }
 
     async matchTrigger(certificate: EwOrigin.Certificate.Entity) {
-        //const filteredAgreements = await Filter.filterAgreements(this, this.agreements, certificate);
+        // const filteredAgreements = await Filter.filterAgreements(this, this.agreements, certificate);
         await this.matcher.match(certificate, this.agreements, this.demands);
     }
 

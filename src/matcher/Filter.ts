@@ -15,7 +15,7 @@
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
 import { Controller} from '../controller/Controller';
-import { logger } from './../index';
+import { logger } from '../Logger';
 import * as EwOrigin from 'ew-origin-lib';
 import * as EwMarket from 'ew-market-lib';
 import * as EwGeneral from 'ew-utils-general-lib';

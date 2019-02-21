@@ -19,7 +19,7 @@ import { Controller } from '../controller/Controller';
 import * as EwOrigin from 'ew-origin-lib';
 import * as EwMarket from 'ew-market-lib';
 import * as EwGeneral from 'ew-utils-general-lib';
-import { logger } from '..';
+import { logger } from '../Logger';
 
 export class SimpleMatcher extends Matcher {
 

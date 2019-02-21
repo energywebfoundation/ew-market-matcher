@@ -17,7 +17,7 @@
 import * as EwOrigin from 'ew-origin-lib';
 import * as EwMarket from 'ew-market-lib';
 import { Controller } from '../controller/Controller';
-import { logger } from '..';
+import { logger } from '../Logger';
 
 export abstract class Matcher {
     protected controller: Controller;
@@ -41,8 +41,6 @@ export abstract class Matcher {
         const matcherAccount = certificate.escrow.find((escrow: any) =>
             escrow.toLowerCase() === this.controller.matcherAddress.toLowerCase(),
         );
-
-
 
         if (!matcherAccount) {
             logger.verbose(' This instance is not an escrow for certificate #' + certificate.id);

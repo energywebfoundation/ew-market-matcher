@@ -18,7 +18,7 @@ import { Matcher } from './Matcher';
 import { Controller } from '../controller/Controller';
 import * as ConfigurationFileInterpreter from './ConfigurationFileInterpreter';
 import * as RuleConf from '../schema-defs/RuleConf';
-import { logger } from '..';
+import { logger } from '../Logger';
 import * as EwOrigin from 'ew-origin-lib';
 import * as EwMarket from 'ew-market-lib';
 import * as EwGeneral from 'ew-utils-general-lib';
@@ -45,13 +45,25 @@ export class ConfigurableReferenceMatcher extends Matcher {
         agreements: EwMarket.Agreement.Entity[],
     ): Promise<{split: boolean, agreement: EwMarket.Agreement.Entity}> {
 
-        const matchingAgreement = agreements.filter((agreement: EwMarket.Agreement.Entity) =>
-            this.controller.getSupply(agreement.supplyId.toString()).assetId.toString() ===
-            certificate.assetId.toString(),
-        );
+        logger.debug('Scanning ' + agreements.length + ' agreements for a match.');
+        const matchingAgreement = agreements.filter((agreement: EwMarket.Agreement.Entity) => {
+            const supply = this.controller.getSupply(agreement.supplyId.toString());
+            const match = supply.assetId.toString() === certificate.assetId.toString();
+            if (match) {
+                logger.debug('Agreement #' + agreement.id + ' and certifacte #'
+                    + certificate.id + ' have the same associated asset ID: ' + supply.assetId);
+                return true;
+            } else {
+                logger.debug('Agreement #' + agreement.id + ' (asset #' + supply.assetId + ') and certifacte #'
+                    + certificate.id + ' ( asset #' + certificate.assetId + ') have different associated asset IDs.');
+
+                return false;
+            }
+
+        });
 
         if (matchingAgreement.length === 0) {
-            logger.info('Found matching agreement for certificate #' + certificate.id);
+            logger.info('Found no matching agreement for certificate #' + certificate.id);
             return {split: false, agreement: null};
         }
 
@@ -98,7 +110,11 @@ export class ConfigurableReferenceMatcher extends Matcher {
                     return {split: true, agreement: null};
                 }
 
-            } else {
+            } else if (certificate.creationTime < agreement.offChainProperties.start || certificate.creationTime > agreement.offChainProperties.ende) {
+                logger.debug(`Certificate ${certificate.id} matches with agreement ${agreement.id}` +
+                    ` but was created before or after the agreements timeperiod`)
+            }
+            else {
                 filteredAgreementList.push(agreement);
             }
         }

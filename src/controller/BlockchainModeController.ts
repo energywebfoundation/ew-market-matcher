@@ -16,7 +16,7 @@
 
 import { Controller} from './Controller';
 import { SimulationDataSource} from '../schema-defs/MatcherConf';
-import { logger } from '..';
+import { logger } from '../Logger';
 import * as SimulationFlowHandler from './SimulationFlowHandler';
 import * as SimulationFlowDef from '../schema-defs/simulation-flow';
 
@@ -154,13 +154,28 @@ export class BlockchainModeController extends Controller {
     }
 
     async matchAggrement(certificate: EwOrigin.Certificate.Entity, agreement: EwMarket.Agreement.Entity) {
+        const demand = this.getDemand(agreement.demandId.toString());
+        logger.debug('Transfering certificate to ' + demand.demandOwner
+            + ' with account ' + this.conf.blockchainProperties.activeUser.address);
+        await certificate.transferFrom(demand.demandOwner);
+
+        //TODO: set matcher props
+
 
         logger.info('Matched certificate #' + certificate.id + ' to agreement #' + agreement.id);
 
     }
 
-    async splitCertificate(certificate: EwOrigin.Certificate.Entity, whForFirstChils: number): Promise<void> {
-        throw new Error('Method not implemented.');
+    async splitCertificate(certificate: EwOrigin.Certificate.Entity, whForFirstChild: number): Promise<void> {
+
+        const result = await certificate.splitCertificate(whForFirstChild);
+        certificate = await certificate.sync()
+
+        const childCertificate1 = await new EwOrigin.Certificate.Entity(certificate.children["0"], this.conf).sync()
+        const childCertificate2 = await new EwOrigin.Certificate.Entity(certificate.children["1"], this.conf).sync()
+        await this.matchTrigger(childCertificate1)
+        await this.matchTrigger(childCertificate2)
+
     }
 
     async matchDemand(certificate: EwOrigin.Certificate.Entity, demand: EwMarket.Demand.Entity) {

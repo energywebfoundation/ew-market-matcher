@@ -15,7 +15,7 @@
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
 import * as RuleConf from '../schema-defs/RuleConf';
-import { logger } from '..';
+import { logger } from '../Logger';
 import * as EwMarket from 'ew-market-lib';
 
 

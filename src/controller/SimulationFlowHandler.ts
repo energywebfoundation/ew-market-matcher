@@ -15,7 +15,7 @@
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
 import { SimulationModeController } from './SimulationModeController';
-import { logger } from '..';
+import { logger } from '../Logger';
 import * as SimulationFlowDef from '../schema-defs/simulation-flow/';
 
 export const handleFlowAction = async (
