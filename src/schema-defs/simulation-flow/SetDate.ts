@@ -15,19 +15,19 @@
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
 export interface SetDateAction {
-  type: SetDateActionType;
-  data: DateData;
+    type: SetDateActionType;
+    data: DateData;
 }
 
 export enum SetDateActionType {
-  SetDate = "SET_DATE"
+    SetDate = 'SET_DATE'
 }
 
 export interface DateData {
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  second: number;
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    second: number;
 }

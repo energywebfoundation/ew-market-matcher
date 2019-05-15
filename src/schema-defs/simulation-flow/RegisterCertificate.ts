@@ -14,27 +14,27 @@
 //
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
-import * as EwOrigin from "ew-origin-lib";
-import { IdentifiableEntity } from "./index";
+import * as EwOrigin from 'ew-origin-lib';
+import { IdentifiableEntity } from './index';
 
 export interface RegisterCertificateAction {
-  type: RegisterCertificateActionType;
-  data: CertificateData;
+    type: RegisterCertificateActionType;
+    data: CertificateData;
 }
 
 export enum RegisterCertificateActionType {
-  RegisterCertificate = "REGISTER_CERTIFICATE"
+    RegisterCertificate = 'REGISTER_CERTIFICATE'
 }
 
 export interface CertificateData extends IdentifiableEntity {
-  onChainProperties: EwOrigin.Certificate.CertificateSpecific;
+    onChainProperties: EwOrigin.Certificate.CertificateSpecific;
 }
 
 export const certificateDataToEntity = (
-  certificateData: CertificateData
+    certificateData: CertificateData
 ): EwOrigin.Certificate.Entity => {
-  const certificate = new EwOrigin.Certificate.Entity(certificateData.id, null);
-  Object.assign(certificate, certificateData.onChainProperties);
+    const certificate = new EwOrigin.Certificate.Entity(certificateData.id, null);
+    Object.assign(certificate, certificateData.onChainProperties);
 
-  return certificate;
+    return certificate;
 };
