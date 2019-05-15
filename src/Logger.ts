@@ -14,15 +14,13 @@
 //
 // @authors: slock.it GmbH, Heiko Burkhardt, heiko.burkhardt@slock.it
 
-import * as Winston from 'winston';
+import * as Winston from "winston";
 
 export const logger = Winston.createLogger({
   format: Winston.format.combine(
     Winston.format.colorize(),
-    Winston.format.simple(),
+    Winston.format.simple()
   ),
-  level: 'debug',
-  transports: [
-    new Winston.transports.Console({ level: 'silly' }),
-  ],
+  level: "debug",
+  transports: [new Winston.transports.Console({ level: "silly" })]
 });

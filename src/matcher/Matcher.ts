@@ -14,60 +14,61 @@
 //
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
-import * as EwOrigin from 'ew-origin-lib';
-import * as EwMarket from 'ew-market-lib';
-import { Controller } from '../controller/Controller';
-import { logger } from '../Logger';
+import * as EwOrigin from "ew-origin-lib";
+import * as EwMarket from "ew-market-lib";
+import { Controller } from "../controller/Controller";
+import { logger } from "../Logger";
 
 export abstract class Matcher {
-    protected controller: Controller;
+  protected controller: Controller;
 
-    abstract async findMatchingAgreement(
-        certificate: EwOrigin.Certificate.Entity,
-        agreements: EwMarket.Agreement.Entity[],
-    ): Promise<{split: boolean, agreement: EwMarket.Agreement.Entity}>;
+  abstract async findMatchingAgreement(
+    certificate: EwOrigin.Certificate.Entity,
+    agreements: EwMarket.Agreement.Entity[]
+  ): Promise<{ split: boolean; agreement: EwMarket.Agreement.Entity }>;
 
-    abstract async findMatchingDemand(
-        certificate: EwOrigin.Certificate.Entity,
-        demands: EwMarket.Demand.Entity[],
-    ): Promise<EwMarket.Demand.Entity>;
+  abstract async findMatchingDemand(
+    certificate: EwOrigin.Certificate.Entity,
+    demands: EwMarket.Demand.Entity[]
+  ): Promise<EwMarket.Demand.Entity>;
 
-    async match(
-        certificate: EwOrigin.Certificate.Entity,
-        agreements: EwMarket.Agreement.Entity[],
-        demands: EwMarket.Demand.Entity[],
-    ): Promise<boolean> {
+  async match(
+    certificate: EwOrigin.Certificate.Entity,
+    agreements: EwMarket.Agreement.Entity[],
+    demands: EwMarket.Demand.Entity[]
+  ): Promise<boolean> {
+    const matcherAccount = certificate.escrow.find(
+      (escrow: any) =>
+        escrow.toLowerCase() === this.controller.matcherAddress.toLowerCase()
+    );
 
-        const matcherAccount = certificate.escrow.find((escrow: any) =>
-            escrow.toLowerCase() === this.controller.matcherAddress.toLowerCase(),
-        );
+    if (!matcherAccount) {
+      logger.verbose(
+        " This instance is not an escrow for certificate #" + certificate.id
+      );
+    } else {
+      logger.verbose(
+        "This instance is an escrow for certificate #" + certificate.id
+      );
 
-        if (!matcherAccount) {
-            logger.verbose(' This instance is not an escrow for certificate #' + certificate.id);
+      const result = await this.findMatchingAgreement(certificate, agreements);
+      if (result.agreement) {
+        await this.controller.matchAggrement(certificate, result.agreement);
 
-        } else {
-            logger.verbose('This instance is an escrow for certificate #' + certificate.id);
+        return true;
+      } else if (!result.split) {
+        await this.controller.handleUnmatchedCertificate(certificate);
+      }
 
-            const result = await this.findMatchingAgreement(certificate, agreements);
-            if (result.agreement) {
-                await this.controller.matchAggrement(certificate, result.agreement);
-                return true;
-
-            } else if (!result.split) {
-                await this.controller.handleUnmatchedCertificate(certificate);
-            }
-
-            // const demand = await this.findMatchingDemand(certificate, demands);
-            // if (demand) {
-            //     await this.controller.matchDemand(certificate, demand);
-            //     return true;
-            // }
-        }
-
-
-        return false;
-
+      // const demand = await this.findMatchingDemand(certificate, demands);
+      // if (demand) {
+      //     await this.controller.matchDemand(certificate, demand);
+      //     return true;
+      // }
     }
 
-    abstract setController(controller: Controller): void;
+    return false;
+  }
+
+  abstract setController(controller: Controller): void;
 }

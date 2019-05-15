@@ -14,80 +14,83 @@
 //
 // @authors: slock.it GmbH, Heiko Burkhardt, heiko.burkhardt@slock.it
 
-import * as fs from 'fs';
-import * as SchemaDefs from './schema-defs/MatcherConf';
-import { Matcher } from './matcher/Matcher';
-import { SimpleMatcher } from './matcher/SimpleMatcher';
-import { ConfigurableReferenceMatcher } from './matcher/ConfigurableReferenceMatcher';
-import { Controller } from './controller/Controller';
-import { SimulationModeController } from './controller/SimulationModeController';
-import * as ConfSchema from '../schemas/conf.schema.json';
-import * as RuleSchema from '../schemas/rule.schema.json';
-import { BlockchainModeController } from './controller/BlockchainModeController';
-import { createBlockchainConf } from './controller/BlockchainConnection';
-import { logger } from './Logger'
+import * as fs from "fs";
+import * as SchemaDefs from "./schema-defs/MatcherConf";
+import { Matcher } from "./matcher/Matcher";
+import { SimpleMatcher } from "./matcher/SimpleMatcher";
+import { ConfigurableReferenceMatcher } from "./matcher/ConfigurableReferenceMatcher";
+import { Controller } from "./controller/Controller";
+import { SimulationModeController } from "./controller/SimulationModeController";
+import * as ConfSchema from "../schemas/conf.schema.json";
+import * as RuleSchema from "../schemas/rule.schema.json";
+import { BlockchainModeController } from "./controller/BlockchainModeController";
+import { createBlockchainConf } from "./controller/BlockchainConnection";
+import { logger } from "./Logger";
 
 const buildMatcher = (
-    matcherSpecification: SchemaDefs.BlockchainMatcherSpecification | SchemaDefs.SimulationMatcherSpecification,
+  matcherSpecification:
+    | SchemaDefs.BlockchainMatcherSpecification
+    | SchemaDefs.SimulationMatcherSpecification
 ): Matcher => {
-    switch (matcherSpecification.type) {
+  switch (matcherSpecification.type) {
+    case SchemaDefs.MatcherType.ConfigurableReference:
+      const matcherConfig = JSON.parse(
+        fs.readFileSync(matcherSpecification.matcherConfigFile, "utf-8")
+      );
+      Controller.validateJson(matcherConfig, RuleSchema, "Rule file");
 
-        case SchemaDefs.MatcherType.ConfigurableReference:
-            const matcherConfig = JSON.parse(fs.readFileSync(matcherSpecification.matcherConfigFile, 'utf-8'));
-            Controller.validateJson(matcherConfig, RuleSchema, 'Rule file');
-            return new ConfigurableReferenceMatcher(matcherConfig);
+      return new ConfigurableReferenceMatcher(matcherConfig);
 
-        case SchemaDefs.MatcherType.Simple:
-            return new SimpleMatcher();
+    case SchemaDefs.MatcherType.Simple:
+      return new SimpleMatcher();
 
-        default :
-            throw new Error('Unknown matcher type.');
-    }
+    default:
+      throw new Error("Unknown matcher type.");
+  }
 };
 
-
-
 const buildController = async (
-    dataSource: SchemaDefs.BlockchainDataSource | SchemaDefs.SimulationDataSource,
+  dataSource: SchemaDefs.BlockchainDataSource | SchemaDefs.SimulationDataSource
 ): Promise<Controller> => {
-    logger.verbose('Data source type is ' + dataSource.type);
-    switch (dataSource.type) {
+  logger.verbose("Data source type is " + dataSource.type);
+  switch (dataSource.type) {
+    case SchemaDefs.BlockchainDataSourceType.Blockchain:
+      const blockchainDataSource = dataSource as SchemaDefs.BlockchainDataSource;
 
-        case SchemaDefs.BlockchainDataSourceType.Blockchain:
-            const blockchainDataSource = dataSource as SchemaDefs.BlockchainDataSource;
-            return new BlockchainModeController(
-                await createBlockchainConf(blockchainDataSource, blockchainDataSource.matcherAccount),
-                blockchainDataSource.matcherAccount.address,
+      return new BlockchainModeController(
+        await createBlockchainConf(
+          blockchainDataSource,
+          blockchainDataSource.matcherAccount
+        ),
+        blockchainDataSource.matcherAccount.address
+      );
 
-            );
+    case SchemaDefs.SimulationDataSourceType.Simulation:
+      return new SimulationModeController(
+        dataSource as SchemaDefs.SimulationDataSource
+      );
 
-        case SchemaDefs.SimulationDataSourceType.Simulation:
-            return new SimulationModeController(dataSource as SchemaDefs.SimulationDataSource);
-
-        default:
-            throw new Error('Unknown data source type.');
-    }
+    default:
+      throw new Error("Unknown data source type.");
+  }
 };
 
 export const startMatcher = async (_config: SchemaDefs.MatcherConf) => {
+  logger.info("Matcher application started.");
 
-    logger.info('Matcher application started.');
-
-    if(_config){
-        const conf: SchemaDefs.MatcherConf = _config
-        try {
-            Controller.validateJson(conf, ConfSchema, 'Config file');
-            const matcher = buildMatcher(conf.matcherSpecification);
-            const controller = await buildController(conf.dataSource);
-            matcher.setController(controller);
-            controller.setMatcher(matcher);
-            controller.start();
-        } catch (e) {
-            logger.error(e.message);
-        }
+  if (_config) {
+    const conf: SchemaDefs.MatcherConf = _config;
+    try {
+      Controller.validateJson(conf, ConfSchema, "Config file");
+      const matcher = buildMatcher(conf.matcherSpecification);
+      const controller = await buildController(conf.dataSource);
+      matcher.setController(controller);
+      controller.setMatcher(matcher);
+      controller.start();
+    } catch (e) {
+      logger.error(e.message);
     }
-    else {
-        throw new Error('No config specified')
-    }
-
+  } else {
+    throw new Error("No config specified");
+  }
 };
