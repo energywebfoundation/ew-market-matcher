@@ -48,11 +48,19 @@ export class ConfigurableReferenceMatcher extends Matcher {
             const supply = this.controller.getSupply(agreement.supplyId.toString());
             const match = supply.assetId.toString() === certificate.assetId.toString();
             if (match) {
-                logger.debug(`Agreement #${agreement.id} and certificate #${certificate.id} have the same associated asset ID: ${supply.assetId}`);
+                logger.debug(
+                    `Agreement #${agreement.id} and certificate #${
+                        certificate.id
+                    } have the same associated asset ID: ${supply.assetId}`
+                );
 
                 return true;
             } else {
-                logger.debug(`Agreement #${agreement.id} (asset #${supply.assetId}) and certificate #${certificate.id} ( asset #${certificate.assetId}) have different associated asset IDs.`);
+                logger.debug(
+                    `Agreement #${agreement.id} (asset #${supply.assetId}) and certificate #${
+                        certificate.id
+                    } ( asset #${certificate.assetId}) have different associated asset IDs.`
+                );
 
                 return false;
             }
@@ -91,7 +99,11 @@ export class ConfigurableReferenceMatcher extends Matcher {
         );
 
         logger.debug(
-            `Sorted agreement list for certificate #${certificate.id}: ${sortedAgreementList.reduce((accumulator: string, currentValue: Agreement.Entity) => (accumulator += currentValue.id + ' '), '')}`
+            `Sorted agreement list for certificate #${certificate.id}: ${sortedAgreementList.reduce(
+                (accumulator: string, currentValue: Agreement.Entity) =>
+                    (accumulator += currentValue.id + ' '),
+                ''
+            )}`
         );
 
         const filteredAgreementList = [];

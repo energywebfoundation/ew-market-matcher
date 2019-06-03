@@ -75,9 +75,7 @@ export abstract class Controller {
 
     abstract start(): void;
 
-    abstract async handleUnmatchedCertificate(
-        certificate: Certificate.Entity
-    ): Promise<void>;
+    abstract async handleUnmatchedCertificate(certificate: Certificate.Entity): Promise<void>;
 
     abstract async registerProducingAsset(newAsset: ProducingAsset.Entity): Promise<void>;
 
@@ -106,10 +104,7 @@ export abstract class Controller {
         whForFirstChils: number
     ): Promise<void>;
 
-    abstract async getCurrentPeriod(
-        startDate: number,
-        timeFrame: TimeFrame
-    ): Promise<number>;
+    abstract async getCurrentPeriod(startDate: number, timeFrame: TimeFrame): Promise<number>;
 
     abstract getAgreement(agreementId: string): Agreement.Entity;
 

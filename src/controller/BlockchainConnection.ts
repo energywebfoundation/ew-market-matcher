@@ -15,19 +15,24 @@
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
 import { ProducingAsset, ConsumingAsset } from 'ew-asset-registry-lib';
-import { Certificate, createBlockchainProperties as issuerCreateBlockchainProperties } from 'ew-origin-lib';
+import {
+    Certificate,
+    createBlockchainProperties as issuerCreateBlockchainProperties
+} from 'ew-origin-lib';
 import { Configuration, ContractEventHandler, EventHandlerManager } from 'ew-utils-general-lib';
-import { Agreement, Demand, Supply, createBlockchainProperties as marketCreateBlockchainProperties} from 'ew-market-lib';
+import {
+    Agreement,
+    Demand,
+    Supply,
+    createBlockchainProperties as marketCreateBlockchainProperties
+} from 'ew-market-lib';
 import { logger } from '../Logger';
 import { Controller } from './Controller';
 import Web3 from 'web3';
 import { IBlockchainDataSource } from '../schema-defs/MatcherConf';
 import { EthAccount } from 'ew-utils-general-lib/dist/js/blockchain-facade/Configuration';
 
-export const initMatchingManager = async (
-    controller: Controller,
-    conf: Configuration.Entity
-) => {
+export const initMatchingManager = async (controller: Controller, conf: Configuration.Entity) => {
     conf.logger.verbose('* Getting all porducing assets');
     const assetList = await ProducingAsset.getAllAssets(conf);
     assetList.forEach(async (asset: ProducingAsset.Entity) =>
@@ -43,9 +48,7 @@ export const initMatchingManager = async (
     conf.logger.verbose('* Getting all active agreements');
     const agreementListLength = await Agreement.getAgreementListLength(conf);
     for (let i = 0; i < agreementListLength; i++) {
-        controller.registerAgreement(
-            await new Agreement.Entity(i.toString(), conf).sync()
-        );
+        controller.registerAgreement(await new Agreement.Entity(i.toString(), conf).sync());
     }
 
     conf.logger.verbose('* Getting all active demands');
@@ -95,10 +98,7 @@ export const createBlockchainConf = async (
     };
 };
 
-export const initEventHandling = async (
-    controller: Controller,
-    conf: Configuration.Entity
-) => {
+export const initEventHandling = async (controller: Controller, conf: Configuration.Entity) => {
     const currentBlockNumber = await conf.blockchainProperties.web3.eth.getBlockNumber();
     const certificateContractEventHandler = new ContractEventHandler(
         conf.blockchainProperties.certificateLogicInstance,
@@ -134,26 +134,22 @@ export const initEventHandling = async (
 
     marketContractEventHandler.onEvent('createdNewDemand', async event => {
         console.log('\n* Event: createdNewDemand demand: ' + event.returnValues._demandId);
-        const newDemand = await new Demand.Entity(
-            event.returnValues._demandId,
-            conf
-        ).sync();
+        const newDemand = await new Demand.Entity(event.returnValues._demandId, conf).sync();
         await controller.registerDemand(newDemand);
         // matchingManager.matchDemandWithCertificatesHoldInTrust(newDemand)
     });
 
     marketContractEventHandler.onEvent('createdNewSupply', async event => {
         console.log('\n* Event: createdNewSupply supply: ' + event.returnValues._supplyId);
-        const newSupply = await new Supply.Entity(
-            event.returnValues._supplyId,
-            conf
-        ).sync();
+        const newSupply = await new Supply.Entity(event.returnValues._supplyId, conf).sync();
         await controller.registerSupply(newSupply);
     });
 
     marketContractEventHandler.onEvent('LogAgreementFullySigned', async event => {
         console.log(
-            `\n* Event: LogAgreementFullySigned - (Agreement, Demand, Supply) ID: (${event.returnValues._agreementId}, ${event.returnValues._demandId}, ${event.returnValues._supplyId})`
+            `\n* Event: LogAgreementFullySigned - (Agreement, Demand, Supply) ID: (${
+                event.returnValues._agreementId
+            }, ${event.returnValues._demandId}, ${event.returnValues._supplyId})`
         );
 
         const newAgreement = await new Agreement.Entity(
@@ -180,20 +176,14 @@ export const initEventHandling = async (
 
     assetContractEventHandler.onEvent('LogAssetFullyInitialized', async event => {
         console.log('\n* Event: LogAssetFullyInitialized asset: ' + event.returnValues._assetId);
-        const newAsset = await new ProducingAsset.Entity(
-            event.returnValues._assetId,
-            conf
-        ).sync();
+        const newAsset = await new ProducingAsset.Entity(event.returnValues._assetId, conf).sync();
         await controller.registerProducingAsset(newAsset);
     });
 
     assetContractEventHandler.onEvent('LogAssetSetActive', async event => {
         console.log('\n* Event: LogAssetSetActive  asset: ' + event.returnValues._assetId);
 
-        const asset = await new ProducingAsset.Entity(
-            event.returnValues._assetId,
-            conf
-        ).sync();
+        const asset = await new ProducingAsset.Entity(event.returnValues._assetId, conf).sync();
         await controller.registerProducingAsset(asset);
     });
 
@@ -219,20 +209,14 @@ export const initEventHandling = async (
         console.log(
             '\n* Event: LogAssetFullyInitialized consuming asset: ' + event.returnValues._assetId
         );
-        const newAsset = await new ConsumingAsset.Entity(
-            event.returnValues._assetId,
-            conf
-        ).sync();
+        const newAsset = await new ConsumingAsset.Entity(event.returnValues._assetId, conf).sync();
         await controller.registerConsumingAsset(newAsset);
     });
 
     consumingAssetContractEventHandler.onEvent('LogAssetSetActive', async event => {
         console.log('\n* Event: LogAssetSetActive consuming asset: ' + event.returnValues._assetId);
 
-        const asset = await new ConsumingAsset.Entity(
-            event.returnValues._assetId,
-            conf
-        ).sync();
+        const asset = await new ConsumingAsset.Entity(event.returnValues._assetId, conf).sync();
         await controller.registerConsumingAsset(asset);
     });
 

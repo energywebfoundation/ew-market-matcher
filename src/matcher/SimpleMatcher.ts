@@ -51,10 +51,7 @@ export class SimpleMatcher extends Matcher {
         throw new Error(METHOD_NOT_IMPLEMENTED);
     }
 
-    matchAgreement(
-        certificate: Certificate.Entity,
-        agreements: Agreement.Entity[]
-    ) {
+    matchAgreement(certificate: Certificate.Entity, agreements: Agreement.Entity[]) {
         throw new Error(METHOD_NOT_IMPLEMENTED);
     }
 }

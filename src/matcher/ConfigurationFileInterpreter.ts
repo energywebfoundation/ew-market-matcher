@@ -54,7 +54,8 @@ export const getSimpleRankingMappedValue = (
         case RuleConf.MappingFormat.Defined:
             const value = agreement[simpleHierarchyRelevantProperty.name];
             const mapping = (simpleHierarchyRelevantProperty as RuleConf.IMappedSimpleHierarchyRelevantProperty).mapping.find(
-                (item: RuleConf.ISimpleHierarchyRelecantPropertyMapping) => item.valueToMap === value
+                (item: RuleConf.ISimpleHierarchyRelecantPropertyMapping) =>
+                    item.valueToMap === value
             );
 
             return mapping ? mapping.mappedValue : getDefaultValue(simpleHierarchyRelevantProperty);

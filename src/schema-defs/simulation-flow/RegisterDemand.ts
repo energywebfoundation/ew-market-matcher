@@ -40,18 +40,3 @@ export const demandDataToEntity = (demandData: IDemandData): Demand.Entity => {
 
     return demand;
 };
-
-const test: IDemandData = {
-    id: '99',
-    offChainProperties: {
-        timeframe: 0,
-        pricePerCertifiedWh: 0,
-        currency: 0,
-        targetWhPerPeriod: 10
-    },
-    onChainProperties: {
-        demandOwner: '0x0',
-        propertiesDocumentHash: '0x0',
-        url: 'test'
-    }
-};

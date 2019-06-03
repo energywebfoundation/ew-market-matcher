@@ -112,9 +112,7 @@ export class BlockchainModeController extends Controller {
     }
 
     getProducingAsset(assetId: string): ProducingAsset.Entity {
-        return this.producingAssets.find(
-            (asset: ProducingAsset.Entity) => asset.id === assetId
-        );
+        return this.producingAssets.find((asset: ProducingAsset.Entity) => asset.id === assetId);
     }
 
     getDemand(demandId: string): Demand.Entity {
@@ -162,13 +160,12 @@ export class BlockchainModeController extends Controller {
         // TODO
     }
 
-    async matchAggrement(
-        certificate: Certificate.Entity,
-        agreement: Agreement.Entity
-    ) {
+    async matchAggrement(certificate: Certificate.Entity, agreement: Agreement.Entity) {
         const demand = this.getDemand(agreement.demandId.toString());
         logger.debug(
-            `Transfering certificate to ${demand.demandOwner} with account ${this.conf.blockchainProperties.activeUser.address}`
+            `Transfering certificate to ${demand.demandOwner} with account ${
+                this.conf.blockchainProperties.activeUser.address
+            }`
         );
         await certificate.transferFrom(demand.demandOwner);
 

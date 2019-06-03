@@ -53,7 +53,9 @@ export class SimulationModeController extends Controller {
             'Simulation flow'
         );
         this.matcherAddress = this.simulationFlow.matcherAddress;
-        logger.verbose(`Loaded simulation flow file containing ${this.simulationFlow.flow.length} actions`);
+        logger.verbose(
+            `Loaded simulation flow file containing ${this.simulationFlow.flow.length} actions`
+        );
         logger.verbose('Set matcher address to ' + this.matcherAddress);
     }
 
@@ -100,7 +102,7 @@ export class SimulationModeController extends Controller {
         )
             ? true
             : false;
-        
+
         if (allowed) {
             if (
                 !this.agreements.find(
@@ -124,9 +126,7 @@ export class SimulationModeController extends Controller {
     }
 
     getProducingAsset(assetId: string): ProducingAsset.Entity {
-        return this.producingAssets.find(
-            (asset: ProducingAsset.Entity) => asset.id === assetId
-        );
+        return this.producingAssets.find((asset: ProducingAsset.Entity) => asset.id === assetId);
     }
 
     getDemand(demandId: string): Demand.Entity {
@@ -178,10 +178,7 @@ export class SimulationModeController extends Controller {
         });
     }
 
-    async matchAggrement(
-        certificate: Certificate.Entity,
-        agreement: Agreement.Entity
-    ) {
+    async matchAggrement(certificate: Certificate.Entity, agreement: Agreement.Entity) {
         this.matches.push({
             agreementId: agreement.id,
             certificateId: certificate.id,
@@ -310,7 +307,9 @@ export class SimulationModeController extends Controller {
                     logger.verbose(`Match #${index} as expected ${LogSymbols.success}`);
                 } else {
                     expectedResultFits = false;
-                    logger.verbose(`Match #${index} is different than expected ${LogSymbols.error}`);
+                    logger.verbose(
+                        `Match #${index} is different than expected ${LogSymbols.error}`
+                    );
                 }
             } else {
                 expectedResultFits = false;

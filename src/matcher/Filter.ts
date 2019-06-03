@@ -50,7 +50,9 @@ export const filterAgreements = async (
     }
 
     logger.verbose(
-        `${filteredAgreements.length} from ${agreements.length} are a possible fit for certificate #${certificate.id}`
+        `${filteredAgreements.length} from ${
+            agreements.length
+        } are a possible fit for certificate #${certificate.id}`
     );
 
     return filteredAgreements;
@@ -87,17 +89,11 @@ const checkFit = async (
     const asset = controller.getProducingAsset(certificate.assetId.toString());
 
     logger.debug(
-        `${loggerPrefix}originator: ${
-            filterSpec.originator
-        }, asset type: ${
+        `${loggerPrefix}originator: ${filterSpec.originator}, asset type: ${
             filterSpec.demand.offChainProperties.assettype
-        }, compliance: ${
-            filterSpec.demand.offChainProperties.registryCompliance
-        }, country ${
+        }, compliance: ${filterSpec.demand.offChainProperties.registryCompliance}, country ${
             filterSpec.demand.offChainProperties.locationCountry
-        }, region: ${
-            filterSpec.demand.offChainProperties.locationRegion
-        }, producing asset: ${
+        }, region: ${filterSpec.demand.offChainProperties.locationRegion}, producing asset: ${
             filterSpec.demand.offChainProperties.productingAsset
         }`
     );
@@ -105,7 +101,9 @@ const checkFit = async (
     if (filterSpec.end < currentTime || filterSpec.start > currentTime) {
         fit = false;
         logger.debug(
-            `${loggerPrefix}is outdated. (current time: ${currentTime}, start time: ${filterSpec.start}, end time: ${filterSpec.end}`
+            `${loggerPrefix}is outdated. (current time: ${currentTime}, start time: ${
+                filterSpec.start
+            }, end time: ${filterSpec.end}`
         );
     }
 
@@ -143,7 +141,7 @@ const checkFit = async (
             'producing asset id'
         );
 
-    logger.debug(`${loggerPrefix}${(fit ? 'does' : 'does not')} fit with asset ${asset.id}.`);
+    logger.debug(`${loggerPrefix}${fit ? 'does' : 'does not'} fit with asset ${asset.id}.`);
 
     return fit;
 };

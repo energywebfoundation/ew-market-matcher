@@ -22,7 +22,7 @@ export enum RegisterCertificateActionType {
 }
 
 export interface ICertificateData extends IIdentifiableEntity {
-    onChainProperties: Certificate.CertificateSpecific;
+    onChainProperties: Certificate.ICertificateSpecific;
 }
 
 export interface IRegisterCertificateAction {
@@ -30,9 +30,7 @@ export interface IRegisterCertificateAction {
     data: ICertificateData;
 }
 
-export const certificateDataToEntity = (
-    certificateData: ICertificateData
-): Certificate.Entity => {
+export const certificateDataToEntity = (certificateData: ICertificateData): Certificate.Entity => {
     const certificate = new Certificate.Entity(certificateData.id, null);
     Object.assign(certificate, certificateData.onChainProperties);
 
