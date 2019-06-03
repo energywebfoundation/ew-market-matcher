@@ -14,25 +14,25 @@
 //
 // @authors: slock.it GmbH; Heiko Burkhardt, heiko.burkhardt@slock.it; Martin Kuechler, martin.kuchler@slock.it
 
-import * as EwMarket from 'ew-market-lib';
-import { IdentifiableEntity } from '.';
+import { Demand } from 'ew-market-lib';
+import { IIdentifiableEntity } from '.';
 
-export interface DemandData extends IdentifiableEntity {
-    offChainProperties: EwMarket.Demand.DemandOffchainproperties;
-    onChainProperties: EwMarket.Demand.DemandOnChainProperties;
+export interface IDemandData extends IIdentifiableEntity {
+    offChainProperties: Demand.IDemandOffChainProperties;
+    onChainProperties: Demand.IDemandOnChainProperties;
 }
 
-export interface RegisterDemandAction {
+export interface IRegisterDemandAction {
     type: RegisterDemandActionType;
-    data: DemandData;
+    data: IDemandData;
 }
 
 export enum RegisterDemandActionType {
     RegisterDemand = 'REGISTER_DEMAND'
 }
 
-export const demandDataToEntity = (demandData: DemandData): EwMarket.Demand.Entity => {
-    const demand = new EwMarket.Demand.Entity(demandData.id, null);
+export const demandDataToEntity = (demandData: IDemandData): Demand.Entity => {
+    const demand = new Demand.Entity(demandData.id, null);
     demand.offChainProperties = demandData.offChainProperties;
     Object.keys(demandData.onChainProperties).forEach(
         (key: string) => (demand[key] = demandData.onChainProperties[key])
@@ -41,7 +41,7 @@ export const demandDataToEntity = (demandData: DemandData): EwMarket.Demand.Enti
     return demand;
 };
 
-const test: DemandData = {
+const test: IDemandData = {
     id: '99',
     offChainProperties: {
         timeframe: 0,
