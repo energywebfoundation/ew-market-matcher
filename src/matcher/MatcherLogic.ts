@@ -57,4 +57,4 @@ export {
     findMatchingDemands,
     findMatchingSupplies,
     findMatchingAgreements
-}
+};

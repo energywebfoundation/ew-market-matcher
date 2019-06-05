@@ -18,8 +18,14 @@ import * as fs from 'fs';
 import * as SchemaDefs from './schema-defs/MatcherConf';
 import { startMatcher } from './exports';
 import { logger } from './Logger';
+import * as MatcherLogic from './matcher/MatcherLogic';
 
-export const METHOD_NOT_IMPLEMENTED = 'Method not implemented.';
+const METHOD_NOT_IMPLEMENTED = 'Method not implemented.';
+
+export {
+    MatcherLogic,
+    METHOD_NOT_IMPLEMENTED
+};
 
 const main = async () => {
     if (process.argv[2]) {
