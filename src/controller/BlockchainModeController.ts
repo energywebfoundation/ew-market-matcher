@@ -160,7 +160,7 @@ export class BlockchainModeController extends Controller {
         // TODO
     }
 
-    async matchAggrement(certificate: Certificate.Entity, agreement: Agreement.Entity) {
+    async matchAgreement(certificate: Certificate.Entity, agreement: Agreement.Entity) {
         const demand = this.getDemand(agreement.demandId.toString());
         logger.debug(
             `Transfering certificate to ${demand.demandOwner} with account ${
@@ -205,6 +205,13 @@ export class BlockchainModeController extends Controller {
 
     async matchDemand(certificate: Certificate.Entity, demand: Demand.Entity) {
         logger.info(`Matched certificate #${certificate.id} to demand #${demand.id}`);
+        logger.debug(
+            `Transfering certificate to ${demand.demandOwner} with account ${
+                this.conf.blockchainProperties.activeUser.address
+            }`
+        );
+        await certificate.transferFrom(demand.demandOwner);
+
     }
 
     async getCurrentPeriod(startDate: number, timeFrame: TimeFrame): Promise<number> {

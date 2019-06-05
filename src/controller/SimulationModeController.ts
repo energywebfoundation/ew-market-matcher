@@ -178,7 +178,7 @@ export class SimulationModeController extends Controller {
         });
     }
 
-    async matchAggrement(certificate: Certificate.Entity, agreement: Agreement.Entity) {
+    async matchAgreement(certificate: Certificate.Entity, agreement: Agreement.Entity) {
         this.matches.push({
             agreementId: agreement.id,
             certificateId: certificate.id,

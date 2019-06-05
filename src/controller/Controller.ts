@@ -61,7 +61,7 @@ export abstract class Controller {
         await this.matcher.match(certificate, this.agreements, this.demands);
     }
 
-    abstract async matchAggrement(
+    abstract async matchAgreement(
         certificate: Certificate.Entity,
         aggreement: Agreement.Entity
     ): Promise<void>;

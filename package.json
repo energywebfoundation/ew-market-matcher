@@ -36,7 +36,7 @@
     "ew-asset-registry-lib": "energywebfoundation/ew-asset-registry-lib#7acd085",
     "ew-utils-general-lib": "energywebfoundation/ew-utils-general-lib#d54e4e2",
     "ew-utils-testbackend": "energywebfoundation/ew-utils-testbackend#c365e3c",
-    "ew-market-lib": "energywebfoundation/ew-market-lib#bc92844",
+    "ew-market-lib": "energywebfoundation/ew-market-lib#10b4d8b",
     "ew-origin-lib": "energywebfoundation/ew-origin-lib#69b6056",
     "ganache-cli": "6.3.0",
     "jsonschema": "1.2.4",

@@ -23,9 +23,9 @@ import { Controller } from '../controller/Controller';
 import * as ConfigurationFileInterpreter from './ConfigurationFileInterpreter';
 import * as RuleConf from '../schema-defs/RuleConf';
 import { logger } from '../Logger';
+import { METHOD_NOT_IMPLEMENTED } from '..';
 
 export class ConfigurableReferenceMatcher extends Matcher {
-    private blockchainConf: Configuration.Entity;
     private conf: RuleConf.IRuleConf;
     private propertyRanking: string[];
 
@@ -44,7 +44,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
         agreements: Agreement.Entity[]
     ): Promise<{ split: boolean; agreement: Agreement.Entity }> {
         logger.debug(`Scanning ${agreements.length} agreements for a match.`);
-        const matchingAgreement = agreements.filter((agreement: Agreement.Entity) => {
+        const matchingAgreements = agreements.filter((agreement: Agreement.Entity) => {
             const supply = this.controller.getSupply(agreement.supplyId.toString());
             const match = supply.assetId.toString() === certificate.assetId.toString();
             if (match) {
@@ -55,51 +55,27 @@ export class ConfigurableReferenceMatcher extends Matcher {
                 );
 
                 return true;
-            } else {
-                logger.debug(
-                    `Agreement #${agreement.id} (asset #${supply.assetId}) and certificate #${
-                        certificate.id
-                    } ( asset #${certificate.assetId}) have different associated asset IDs.`
-                );
-
-                return false;
             }
+
+            logger.debug(
+                `Agreement #${agreement.id} (asset #${supply.assetId}) and certificate #${
+                    certificate.id
+                } ( asset #${certificate.assetId}) have different associated asset IDs.`
+            );
+
+            return false;
         });
 
-        if (matchingAgreement.length === 0) {
+        if (matchingAgreements.length === 0) {
             logger.info('Found no matching agreement for certificate #' + certificate.id);
 
             return { split: false, agreement: null };
         }
 
-        const sortedAgreementList = matchingAgreement.sort(
-            (a: Agreement.Entity, b: Agreement.Entity) => {
-                // TODO: change
-                const rule = this.conf.rule as RuleConf.ISimpleHierarchyRule;
-
-                const unequalProperty = rule.relevantProperties.find(
-                    (property: RuleConf.ISimpleHierarchyRelevantProperty) =>
-                        a[property.name] !== b[property.name]
-                );
-                if (!unequalProperty) {
-                    return 0;
-                }
-
-                const valueA = ConfigurationFileInterpreter.getSimpleRankingMappedValue(
-                    unequalProperty,
-                    a
-                );
-                const valueB = ConfigurationFileInterpreter.getSimpleRankingMappedValue(
-                    unequalProperty,
-                    b
-                );
-
-                return unequalProperty.preferHigherValues ? valueB - valueA : valueA - valueB;
-            }
-        );
+        matchingAgreements.sort(this.sortAgreements);
 
         logger.debug(
-            `Sorted agreement list for certificate #${certificate.id}: ${sortedAgreementList.reduce(
+            `Sorted agreement list for certificate #${certificate.id}: ${matchingAgreements.reduce(
                 (accumulator: string, currentValue: Agreement.Entity) =>
                     (accumulator += currentValue.id + ' '),
                 ''
@@ -108,7 +84,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
 
         const filteredAgreementList = [];
 
-        for (const agreement of sortedAgreementList) {
+        for (const agreement of matchingAgreements) {
             const currentPeriod = await this.controller.getCurrentPeriod(
                 agreement.offChainProperties.start,
                 agreement.offChainProperties.timeframe
@@ -125,7 +101,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
 
             if (
                 certificate.creationTime < agreement.offChainProperties.start ||
-                certificate.creationTime > agreement.offChainProperties.ende
+                certificate.creationTime > agreement.offChainProperties.end
             ) {
                 logger.debug(
                     `Certificate ${certificate.id} matches with agreement ${agreement.id}` +
@@ -133,7 +109,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
                 );
             } else if (certificate.powerInW > neededWhForCurrentPeriod) {
                 logger.debug(
-                    `Certificate ${certificate.id} to large (${certificate.powerInW})` +
+                    `Certificate ${certificate.id} too large (${certificate.powerInW})` +
                         `for agreement ${agreement.id} (${neededWhForCurrentPeriod})`
                 );
                 if (neededWhForCurrentPeriod > 0) {
@@ -158,8 +134,51 @@ export class ConfigurableReferenceMatcher extends Matcher {
     async findMatchingDemand(
         certificate: Certificate.Entity,
         demands: Demand.Entity[]
-    ): Promise<Demand.Entity> {
-        throw new Error('Method not implemented.');
+    ): Promise<{ split: boolean; demand: Demand.Entity }> {
+        logger.debug(`Scanning ${demands.length} demands for a match.`);
+        const offeredPower: number = Number(certificate.powerInW);
+
+        for (const demand of demands) {
+            const requiredPower: number = demand.offChainProperties.targetWhPerPeriod;
+
+            if (offeredPower === requiredPower) {
+                return { split: false, demand };
+            } else if (offeredPower > requiredPower) {
+                logger.debug(`Certificate ${certificate.id} too large (${offeredPower}) for demand ${demand.id} (${requiredPower}). Splitting...`);
+
+                if (requiredPower > 0) {
+                    await this.controller.splitCertificate(certificate, requiredPower);
+
+                    return { split: true, demand: null };
+                }
+            }
+        }
+
+        return { split: false, demand: null };
+    }
+
+    private sortAgreements(a: Agreement.Entity, b: Agreement.Entity) {
+        // TODO: change
+        const rule = this.conf.rule as RuleConf.ISimpleHierarchyRule;
+
+        const unequalProperty = rule.relevantProperties.find(
+            (property: RuleConf.ISimpleHierarchyRelevantProperty) =>
+                a[property.name] !== b[property.name]
+        );
+        if (!unequalProperty) {
+            return 0;
+        }
+
+        const valueA = ConfigurationFileInterpreter.getSimpleRankingMappedValue(
+            unequalProperty,
+            a
+        );
+        const valueB = ConfigurationFileInterpreter.getSimpleRankingMappedValue(
+            unequalProperty,
+            b
+        );
+
+        return unequalProperty.preferHigherValues ? valueB - valueA : valueA - valueB;
     }
 
     // async match(certificate: EwOrigin.Certificate.Entity, agreements: EwMarket.Agreement.Entity[]) {
@@ -230,7 +249,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
     //     }
 
     //     if (filteredAgreementList.length > 0) {
-    //         await this.controller.matchAggrement(certificate, filteredAgreementList[0]);
+    //         await this.controller.matchAgreement(certificate, filteredAgreementList[0]);
 
     //     } else {
 
