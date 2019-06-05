@@ -379,15 +379,17 @@ describe('Test Matcher', async () => {
             assert.equal(await Certificate.getCertificateListLength(conf), 4);
         }).timeout(6000);
 
-        it('split certificate owner is the trader', async () => {
-            // const certificate1 = await new Certificate.Entity('1', conf).sync();
-            // assert.equal(await certificate1.getOwner(), assetOwnerAddress);
+        it('asset owner is still the owner of the original certificate', async () => {
+            const certificate = await new Certificate.Entity('1', conf).sync();
+            assert.equal(await certificate.getOwner(), assetOwnerAddress);
+        });
 
-            const certificate2 = await new Certificate.Entity('2', conf).sync();
+        it('trader is owner of the split certificates', async () => {
+            const certificate1 = await new Certificate.Entity('2', conf).sync();
+            assert.equal(await certificate1.getOwner(), accountTrader);
+
+            const certificate2 = await new Certificate.Entity('3', conf).sync();
             assert.equal(await certificate2.getOwner(), accountTrader);
-
-            // const certificate3 = await new Certificate.Entity('3', conf).sync();
-            // assert.equal(await certificate3.getOwner(), assetOwnerAddress);
         });
     });
 });
