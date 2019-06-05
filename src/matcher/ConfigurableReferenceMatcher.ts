@@ -16,23 +16,22 @@
 
 import { Certificate } from 'ew-origin-lib';
 import { Agreement, Demand } from 'ew-market-lib';
-import { Configuration } from 'ew-utils-general-lib';
 
 import { Matcher } from './Matcher';
+import { findMatchingDemands, findMatchingAgreements } from './MatcherLogic';
 import { Controller } from '../controller/Controller';
 import * as ConfigurationFileInterpreter from './ConfigurationFileInterpreter';
 import * as RuleConf from '../schema-defs/RuleConf';
 import { logger } from '../Logger';
-import { METHOD_NOT_IMPLEMENTED } from '..';
 
 export class ConfigurableReferenceMatcher extends Matcher {
-    private conf: RuleConf.IRuleConf;
+    private ruleConf: RuleConf.IRuleConf;
     private propertyRanking: string[];
 
-    constructor(conf: RuleConf.IRuleConf) {
+    constructor(ruleConf: RuleConf.IRuleConf) {
         super();
-        this.conf = conf;
-        this.propertyRanking = ConfigurationFileInterpreter.getRanking(this.conf);
+        this.ruleConf = ruleConf;
+        this.propertyRanking = ConfigurationFileInterpreter.getRanking(this.ruleConf);
     }
 
     setController(controller: Controller) {
@@ -44,27 +43,8 @@ export class ConfigurableReferenceMatcher extends Matcher {
         agreements: Agreement.Entity[]
     ): Promise<{ split: boolean; agreement: Agreement.Entity }> {
         logger.debug(`Scanning ${agreements.length} agreements for a match.`);
-        const matchingAgreements = agreements.filter((agreement: Agreement.Entity) => {
-            const supply = this.controller.getSupply(agreement.supplyId.toString());
-            const match = supply.assetId.toString() === certificate.assetId.toString();
-            if (match) {
-                logger.debug(
-                    `Agreement #${agreement.id} and certificate #${
-                        certificate.id
-                    } have the same associated asset ID: ${supply.assetId}`
-                );
 
-                return true;
-            }
-
-            logger.debug(
-                `Agreement #${agreement.id} (asset #${supply.assetId}) and certificate #${
-                    certificate.id
-                } ( asset #${certificate.assetId}) have different associated asset IDs.`
-            );
-
-            return false;
-        });
+        const matchingAgreements = await findMatchingAgreements(certificate, this.controller.conf, agreements);
 
         if (matchingAgreements.length === 0) {
             logger.info('Found no matching agreement for certificate #' + certificate.id);
@@ -136,21 +116,25 @@ export class ConfigurableReferenceMatcher extends Matcher {
         demands: Demand.Entity[]
     ): Promise<{ split: boolean; demand: Demand.Entity }> {
         logger.debug(`Scanning ${demands.length} demands for a match.`);
+
+        const matchedDemands = await findMatchingDemands(certificate, this.controller.conf, demands);
         const offeredPower: number = Number(certificate.powerInW);
 
-        for (const demand of demands) {
+        for (const demand of matchedDemands) {
             const requiredPower: number = demand.offChainProperties.targetWhPerPeriod;
 
             if (offeredPower === requiredPower) {
                 return { split: false, demand };
-            } else if (offeredPower > requiredPower) {
-                logger.debug(`Certificate ${certificate.id} too large (${offeredPower}) for demand ${demand.id} (${requiredPower}). Splitting...`);
+            } else if (offeredPower < requiredPower) {
+                continue;
+            }
 
-                if (requiredPower > 0) {
-                    await this.controller.splitCertificate(certificate, requiredPower);
+            logger.debug(`Certificate ${certificate.id} too large (${offeredPower}) for demand ${demand.id} (${requiredPower}). Splitting...`);
 
-                    return { split: true, demand: null };
-                }
+            if (requiredPower > 0) {
+                await this.controller.splitCertificate(certificate, requiredPower);
+
+                return { split: true, demand: null };
             }
         }
 
@@ -159,7 +143,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
 
     private sortAgreements(a: Agreement.Entity, b: Agreement.Entity) {
         // TODO: change
-        const rule = this.conf.rule as RuleConf.ISimpleHierarchyRule;
+        const rule = this.ruleConf.rule as RuleConf.ISimpleHierarchyRule;
 
         const unequalProperty = rule.relevantProperties.find(
             (property: RuleConf.ISimpleHierarchyRelevantProperty) =>
@@ -209,7 +193,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
 
     //     const sortedAgreementList = agreements.sort((a: EwMarket.Agreement.Entity, b: EwMarket.Agreement.Entity) => {
     //         // TODO: change
-    //         const rule = (this.conf.rule as RuleConf.SimpleHierarchyRule);
+    //         const rule = (this.ruleConf.rule as RuleConf.SimpleHierarchyRule);
 
     //         const unequalProperty = rule.relevantProperties
     //             .find((property: RuleConf.SimpleHierarchyRelevantProperty) => a[property.name] !== b[property.name]);

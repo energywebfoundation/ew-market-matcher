@@ -26,10 +26,11 @@ import { initMatchingManager, initEventHandling } from './BlockchainConnection';
 import { METHOD_NOT_IMPLEMENTED } from '..';
 
 export class BlockchainModeController extends Controller {
+    public conf: Configuration.Entity;
+
     private simulationFlow: SimulationFlowDef.ISimulationFlow;
     private matches: SimulationFlowDef.IMatch[];
     private date: number;
-    private conf: Configuration.Entity;
 
     constructor(conf: Configuration.Entity, matcherAddress: string) {
         super();
