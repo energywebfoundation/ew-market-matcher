@@ -23,7 +23,7 @@ import { Controller } from './Controller';
 import { logger } from '../Logger';
 import * as SimulationFlowDef from '../schema-defs/simulation-flow';
 import { initMatchingManager, initEventHandling } from './BlockchainConnection';
-import { METHOD_NOT_IMPLEMENTED } from '..';
+import { METHOD_NOT_IMPLEMENTED } from '../exports';
 
 export class BlockchainModeController extends Controller {
     public conf: Configuration.Entity;

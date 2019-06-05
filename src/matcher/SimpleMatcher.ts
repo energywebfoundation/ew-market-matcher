@@ -18,7 +18,7 @@ import { Matcher } from './Matcher';
 import { Controller } from '../controller/Controller';
 import { Certificate } from 'ew-origin-lib';
 import { Agreement, Demand } from 'ew-market-lib';
-import { METHOD_NOT_IMPLEMENTED } from '..';
+import { METHOD_NOT_IMPLEMENTED } from '../exports';
 
 export class SimpleMatcher extends Matcher {
     static SLEEP(ms: number) {

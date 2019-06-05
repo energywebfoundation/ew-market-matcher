@@ -28,7 +28,7 @@ import { logger } from '../Logger';
 import * as SimulationFlowHandler from './SimulationFlowHandler';
 import * as SimulationFlowDef from '../schema-defs/simulation-flow/';
 import * as SimulationDescriptionSchema from '../../schemas/simulation-description.schema.json';
-import { METHOD_NOT_IMPLEMENTED } from '..';
+import { METHOD_NOT_IMPLEMENTED } from '../exports';
 
 export class SimulationModeController extends Controller {
     private simulationFlow: SimulationFlowDef.ISimulationFlow;
