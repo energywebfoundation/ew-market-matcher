@@ -1,13 +1,23 @@
 {
     "dataSource": {
         "type": "BLOCKCHAIN",
-        "web3Url": "http://localhost:8545",
-        "offChainDataSourceUrl": "http://localhost:3030",
-        "marketContractLookupAddress": "0x35E1bA1dEC0bc5A14799563EF8564310846D1438",
-        "originContractLookupAddress": "0xE377ae7241f76aC5Cdb89f5DEbc0dBE82f9c2C03",
+        "web3Url": "https://rpc.slock.it/tobalaba",
+        "offChainDataSourceUrl": "http://ec2-18-215-33-210.compute-1.amazonaws.com:3030",
+        "marketContractLookupAddress": "0x5F8c2B9d47D12416FEF33D02754A095509e7D521",
+        "originContractLookupAddress": "0xBfFC2977015E59D5B9E33F48B167F96239DD0624",
+        "assetContractLookupAddress": "0x20692c76A944aAB7DDF726946a6335B289990a60",
         "matcherAccount": {
             "address": "0x585cc5c7829b1fd303ef5c019ed23815a205a59e",
             "privateKey": "0xe9a63e116f72c2e368376eb88c22fecf2a5e94a93464ff8802cf97caac657548"
+        },
+        "simulateSupplyEnergyGeneration": {
+            "solarAssetGenerationHoursMap": [0, 0, 0, 0, 0, 1, 3, 5, 8, 10, 15, 16, 17, 16, 14, 12, 8, 3, 0, 0, 0, 0, 0, 0],
+            "checkInterval": 45000,
+            "producingAssetId": "0",
+            "smartMeterAddress": "0x343854a430653571b4de6bf2b8c475f828036c30",
+            "smartMeterPrivateKey": "0x12c5c7473dbdb92a524a93baa14ded529fe29acef8d269a3901c14a15e2b0f98",
+            "assetOwnerAddress": "0x33496f621350cea01b18ea5b5c43c6c233c3f72d",
+            "assetOwnerPrivateKey": "0x96ce644659ea5572aedc29296c866a62c36c6cdcafc8801c1c46d02abc8c0047"
         }
     },
     "matcherSpecification": {
