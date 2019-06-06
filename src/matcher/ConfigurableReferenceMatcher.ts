@@ -18,7 +18,7 @@ import { Certificate } from 'ew-origin-lib';
 import { Agreement, Demand } from 'ew-market-lib';
 
 import { Matcher } from './Matcher';
-import { findMatchingDemands, findMatchingAgreements } from './MatcherLogic';
+import { findMatchingDemandsForCertificate, findMatchingAgreementsForCertificate } from './MatcherLogic';
 import { Controller } from '../controller/Controller';
 import * as ConfigurationFileInterpreter from './ConfigurationFileInterpreter';
 import * as RuleConf from '../schema-defs/RuleConf';
@@ -44,7 +44,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
     ): Promise<{ split: boolean; agreement: Agreement.Entity }> {
         logger.debug(`Scanning ${agreements.length} agreements for a match.`);
 
-        const matchingAgreements = await findMatchingAgreements(certificate, this.controller.conf, agreements);
+        const matchingAgreements = await findMatchingAgreementsForCertificate(certificate, this.controller.conf, agreements);
 
         if (matchingAgreements.length === 0) {
             logger.info('Found no matching agreement for certificate #' + certificate.id);
@@ -117,7 +117,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
     ): Promise<{ split: boolean; demand: Demand.Entity }> {
         logger.debug(`Scanning ${demands.length} demands for a match.`);
 
-        const matchedDemands = await findMatchingDemands(certificate, this.controller.conf, demands);
+        const matchedDemands = await findMatchingDemandsForCertificate(certificate, this.controller.conf, demands);
         const offeredPower: number = Number(certificate.powerInW);
 
         for (const demand of matchedDemands) {

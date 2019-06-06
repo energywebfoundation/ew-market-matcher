@@ -2,7 +2,7 @@ import { Configuration } from 'ew-utils-general-lib';
 import { Certificate } from 'ew-origin-lib';
 import { Supply, Demand, Agreement } from 'ew-market-lib';
 
-const findMatchingDemands = async (
+const findMatchingDemandsForCertificate = async (
     certificate: Certificate.Entity,
     conf: Configuration.Entity,
     demands?: Demand.Entity[]
@@ -13,31 +13,10 @@ const findMatchingDemands = async (
         demands = await Demand.getAllDemands(conf);
     }
 
-    return demands.filter(demand => {
-        console.log({
-            demandPerPeriod: demand.offChainProperties.targetWhPerPeriod,
-            certificatePower
-        });
-
-        return demand.offChainProperties.targetWhPerPeriod >= certificatePower;
-    });
+    return demands.filter(demand => demand.offChainProperties.targetWhPerPeriod >= certificatePower);
 };
 
-const findMatchingSupplies = async (
-    demand: Demand.Entity,
-    conf: Configuration.Entity,
-    supplies?: Supply.Entity[]
-): Promise<Supply.Entity[]> => {
-    const demandedPower: number = Number(demand.offChainProperties.targetWhPerPeriod);
-
-    if (!supplies) {
-        supplies = await Supply.getAllSupplies(conf);
-    }
-
-    return supplies.filter(supply => supply.offChainProperties.availableWh > demandedPower);
-};
-
-const findMatchingAgreements = async (
+const findMatchingAgreementsForCertificate = async (
     certificate: Certificate.Entity,
     conf: Configuration.Entity,
     agreements?: Agreement.Entity[]
@@ -53,8 +32,37 @@ const findMatchingAgreements = async (
     });
 };
 
+const findMatchingSuppliesForDemand = async (
+    demand: Demand.Entity,
+    conf: Configuration.Entity,
+    supplies?: Supply.Entity[]
+): Promise<Supply.Entity[]> => {
+    const demandedPower: number = Number(demand.offChainProperties.targetWhPerPeriod);
+
+    if (!supplies) {
+        supplies = await Supply.getAllSupplies(conf);
+    }
+
+    return supplies.filter(supply => supply.offChainProperties.availableWh > demandedPower);
+};
+
+const findMatchingCertificatesForDemand = async (
+    demand: Demand.Entity,
+    conf: Configuration.Entity,
+    certs?: Certificate.Entity[]
+): Promise<Certificate.Entity[]> => {
+    const demandedPower: number = Number(demand.offChainProperties.targetWhPerPeriod);
+
+    if (!certs) {
+        certs = await Certificate.getActiveCertificates(conf);
+    }
+
+    return certs.filter(cert => cert.powerInW > demandedPower);
+};
+
 export {
-    findMatchingDemands,
-    findMatchingSupplies,
-    findMatchingAgreements
+    findMatchingDemandsForCertificate,
+    findMatchingSuppliesForDemand,
+    findMatchingAgreementsForCertificate,
+    findMatchingCertificatesForDemand
 };
