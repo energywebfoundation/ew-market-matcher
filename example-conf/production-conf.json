@@ -2,7 +2,7 @@
     "dataSource": {
         "type": "BLOCKCHAIN",
         "web3Url": "https://rpc.slock.it/tobalaba",
-        "offChainDataSourceUrl": "http://ec2-18-215-33-210.compute-1.amazonaws.com:3030",
+        "offChainDataSourceUrl": "http://localhost:3030",
         "marketContractLookupAddress": "0x5F8c2B9d47D12416FEF33D02754A095509e7D521",
         "originContractLookupAddress": "0xBfFC2977015E59D5B9E33F48B167F96239DD0624",
         "assetContractLookupAddress": "0x20692c76A944aAB7DDF726946a6335B289990a60",
