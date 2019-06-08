@@ -45,6 +45,7 @@
     "jsonschema": "1.2.4",
     "log-symbols": "2.2.0",
     "moment": "2.24.0",
+    "moment-timezone": "0.5.25",
     "web3": "1.0.0-beta.37",
     "winston": "3.2.1"
   },

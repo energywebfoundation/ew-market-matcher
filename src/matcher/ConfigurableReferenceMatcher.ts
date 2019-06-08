@@ -92,7 +92,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
                     `Certificate ${certificate.id} too large (${certificate.powerInW})` +
                         `for agreement ${agreement.id} (${neededWhForCurrentPeriod})`
                 );
-                if (neededWhForCurrentPeriod > 0 && certificate.status === Certificate.Status.Active) {
+                if (neededWhForCurrentPeriod > 0 && Number(certificate.status) === Certificate.Status.Active) {
                     await this.controller.splitCertificate(certificate, neededWhForCurrentPeriod);
 
                     return { split: true, agreement: null };
@@ -131,7 +131,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
 
             logger.debug(`Certificate ${certificate.id} too large (${offeredPower}) for demand ${demand.id} (${requiredPower}). Splitting...`);
 
-            if (requiredPower > 0 && certificate.status === Certificate.Status.Active) {
+            if (requiredPower > 0 && Number(certificate.status) === Certificate.Status.Active) {
                 await this.controller.splitCertificate(certificate, requiredPower);
 
                 return { split: true, demand: null };
