@@ -57,7 +57,7 @@ const findMatchingCertificatesForDemand = async (
         certs = await Certificate.getActiveCertificates(conf);
     }
 
-    return certs.filter(cert => cert.powerInW > demandedPower);
+    return certs.filter(cert => cert.powerInW >= demandedPower);
 };
 
 export {
