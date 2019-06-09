@@ -250,11 +250,11 @@ function findCurrentTimeEntry() {
 
                     if (hourSupply) {
                         await createSupply(hourSupply);
-                        await createDemand(
-                            hourSupply,
-                            moment().minutes(0).seconds(0).milliseconds(0).format('x'),
-                            moment().minutes(59).seconds(59).milliseconds(999).format('x')
-                        );
+                        // await createDemand(
+                        //     hourSupply,
+                        //     moment().minutes(0).seconds(0).milliseconds(0).format('x'),
+                        //     moment().minutes(59).seconds(59).milliseconds(999).format('x')
+                        // );
 
                         /** 
                          * For now demand matches certificate only if
@@ -267,15 +267,13 @@ function findCurrentTimeEntry() {
                          * 
                          */
 
-                        readingAmountToAdd = hourSupply;
+                        // readingAmountToAdd = hourSupply;
                     }
-
-                    const previousRead = await getProducingAssetSmartMeterRead();
-
-                    await saveProducingAssetSmartMeterRead(previousRead + readingAmountToAdd);
                 }
 
-                
+                const previousRead = await getProducingAssetSmartMeterRead();
+
+                await saveProducingAssetSmartMeterRead(previousRead + readingAmountToAdd);
             }
         }
 
