@@ -99,4 +99,32 @@ describe('Test Matcher Logic', async () => {
         });
     });
 
+    // TO-DO Finish mocking this test
+
+    // describe('findMatchingAgreementsForCertificate', async () => {
+    //     it('matches when certificate assetId equals agreement supply assetId', async () => {
+    //         const mockedCertificate: Certificate.Entity = mock(Certificate.Entity);
+    //         when(mockedCertificate.assetId).thenReturn(0);
+
+    //         const mockedAgreement: Agreement.Entity = mock(Agreement.Entity);
+    //         when(mockedAgreement.supplyId).thenReturn(1).thenReturn(2).thenReturn(3);
+            
+    //         const certificate: mockedCertificate = instance(mockedCertificate);
+    //         const agreements = [];
+
+    //         for (let i = 0; i < 3; i++) {
+    //             const agreement: mockedAgreement = instance(mockedAgreement);
+    //             agreements.push(agreement);
+    //         }
+
+    //         console.log({
+    //             certAssetId: certificate.assetId,
+    //             agreementsAssetIds: agreements.map(agreement => agreement.supplyId)
+    //         })
+
+    //         const matchedAgreements = await findMatchingAgreementsForCertificate(certificate, conf, agreements);
+    //         assert.lengthOf(matchedAgreements, 1);
+    //     });
+    // });
+
 });
