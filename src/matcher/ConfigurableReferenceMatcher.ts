@@ -24,6 +24,10 @@ import * as ConfigurationFileInterpreter from './ConfigurationFileInterpreter';
 import * as RuleConf from '../schema-defs/RuleConf';
 import { logger } from '../Logger';
 
+export const DEMANDS_ALREADY_MATCHED_POWER_MAP = {
+
+};
+
 export class ConfigurableReferenceMatcher extends Matcher {
     private ruleConf: RuleConf.IRuleConf;
     private propertyRanking: string[];
@@ -92,7 +96,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
                     `Certificate ${certificate.id} too large (${certificate.powerInW})` +
                         `for agreement ${agreement.id} (${neededWhForCurrentPeriod})`
                 );
-                if (neededWhForCurrentPeriod > 0) {
+                if (neededWhForCurrentPeriod > 0 && Number(certificate.status) === Certificate.Status.Active) {
                     await this.controller.splitCertificate(certificate, neededWhForCurrentPeriod);
 
                     return { split: true, agreement: null };
@@ -121,17 +125,18 @@ export class ConfigurableReferenceMatcher extends Matcher {
         const offeredPower: number = Number(certificate.powerInW);
 
         for (const demand of matchedDemands) {
-            const requiredPower: number = demand.offChainProperties.targetWhPerPeriod;
+            const requiredPower: number = typeof(DEMANDS_ALREADY_MATCHED_POWER_MAP[demand.id]) === 'undefined' ?
+                 demand.offChainProperties.targetWhPerPeriod : Number(demand.offChainProperties.targetWhPerPeriod) - DEMANDS_ALREADY_MATCHED_POWER_MAP[demand.id];
 
             if (offeredPower === requiredPower) {
                 return { split: false, demand };
-            } else if (offeredPower < requiredPower) {
+            } else if (offeredPower < requiredPower || requiredPower === 0) {
                 continue;
             }
 
             logger.debug(`Certificate ${certificate.id} too large (${offeredPower}) for demand ${demand.id} (${requiredPower}). Splitting...`);
 
-            if (requiredPower > 0) {
+            if (requiredPower > 0 && Number(certificate.status) === Certificate.Status.Active) {
                 await this.controller.splitCertificate(certificate, requiredPower);
 
                 return { split: true, demand: null };

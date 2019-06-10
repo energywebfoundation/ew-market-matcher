@@ -1,0 +1,19 @@
+version: '3'
+services:
+  matcher: 
+    build: .
+    command: npm start example-conf/production-conf.json
+    volumes:
+      - ./example-conf/production-conf.json:/src/example-conf/production-conf.json
+
+  supply-simulator:
+    build: .
+    command: npm run start-supply-energy-generation-simulator
+    volumes:
+      - ./example-conf/production-conf.json:/src/example-conf/production-conf.json
+  
+  demand-simulator:
+    build: .
+    command: npm run start-demand-simulator
+    volumes:
+      - ./example-conf/production-conf.json:/src/example-conf/production-conf.json
