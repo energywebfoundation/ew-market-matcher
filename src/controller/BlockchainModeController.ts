@@ -24,6 +24,7 @@ import { logger } from '../Logger';
 import * as SimulationFlowDef from '../schema-defs/simulation-flow';
 import { initMatchingManager, initEventHandling } from './BlockchainConnection';
 import { METHOD_NOT_IMPLEMENTED } from '../exports';
+import { DEMANDS_ALREADY_MATCHED_POWER_MAP } from '../matcher/ConfigurableReferenceMatcher';
 
 export class BlockchainModeController extends Controller {
     public conf: Configuration.Entity;
@@ -211,6 +212,11 @@ export class BlockchainModeController extends Controller {
         );
         await certificate.transferFrom(demand.demandOwner);
 
+        if (typeof(DEMANDS_ALREADY_MATCHED_POWER_MAP[demand.id]) === 'undefined') {
+            DEMANDS_ALREADY_MATCHED_POWER_MAP[demand.id] = 0;
+        }
+
+        DEMANDS_ALREADY_MATCHED_POWER_MAP[demand.id] += Number(certificate.powerInW);
     }
 
     async getCurrentPeriod(startDate: number, timeFrame: TimeFrame): Promise<number> {

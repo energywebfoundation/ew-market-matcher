@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha --exit -r ts-node/register src/test/*.ts",
     "start": "npm run build && node dist/js/src/index.js",
-    "start-supply-energy-generation-simulator": "npm run build && node dist/js/src/simulateSupplyEnergyGeneration.js",
+    "start-supply-energy-generation-simulator": "npm run build && node dist/js/src/simulation/simulateSupplyEnergyGeneration.js",
+    "start-demand-simulator": "npm run build && node dist/js/src/simulation/simulateDemand.js",
     "debug": "node --inspect-brk dist/js/src/index.js",
     "start-test-backend": "node node_modules/ew-utils-testbackend/dist/js/src/index.js",
     "start-ganache": "ganache-cli -m 'chalk park staff buzz chair purchase wise oak receive avoid avoid home' -g 0 -l 80000000 -e 1000000 -a 20",
@@ -46,6 +47,7 @@
     "log-symbols": "2.2.0",
     "moment": "2.24.0",
     "moment-timezone": "0.5.25",
+    "node-fetch": "2.6.0",
     "web3": "1.0.0-beta.37",
     "winston": "3.2.1"
   },

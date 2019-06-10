@@ -24,6 +24,10 @@ import * as ConfigurationFileInterpreter from './ConfigurationFileInterpreter';
 import * as RuleConf from '../schema-defs/RuleConf';
 import { logger } from '../Logger';
 
+export const DEMANDS_ALREADY_MATCHED_POWER_MAP = {
+
+};
+
 export class ConfigurableReferenceMatcher extends Matcher {
     private ruleConf: RuleConf.IRuleConf;
     private propertyRanking: string[];
@@ -121,11 +125,12 @@ export class ConfigurableReferenceMatcher extends Matcher {
         const offeredPower: number = Number(certificate.powerInW);
 
         for (const demand of matchedDemands) {
-            const requiredPower: number = demand.offChainProperties.targetWhPerPeriod;
+            const requiredPower: number = typeof(DEMANDS_ALREADY_MATCHED_POWER_MAP[demand.id]) === 'undefined' ?
+                 demand.offChainProperties.targetWhPerPeriod : Number(demand.offChainProperties.targetWhPerPeriod) - DEMANDS_ALREADY_MATCHED_POWER_MAP[demand.id];
 
             if (offeredPower === requiredPower) {
                 return { split: false, demand };
-            } else if (offeredPower < requiredPower) {
+            } else if (offeredPower < requiredPower || requiredPower === 0) {
                 continue;
             }
 
