@@ -32,7 +32,10 @@ export async function getBlockchainConf() {
     );
 }
 
-export async function getAssetConf()  {
+export async function getAssetConf(
+    accountAddress: string = SMART_METER_ADDRESS,
+    accountPrivateKey: string = SMART_METER_PRIVATE_KEY
+)  {
     const conf = await getBlockchainConf();
 
     conf.blockchainProperties = await assetCreateBlockchainProperties(
@@ -42,8 +45,8 @@ export async function getAssetConf()  {
     );
 
     conf.blockchainProperties.activeUser = {
-        address: SMART_METER_ADDRESS,
-        privateKey: SMART_METER_PRIVATE_KEY
+        address: accountAddress,
+        privateKey: accountPrivateKey
     };
 
     return conf;

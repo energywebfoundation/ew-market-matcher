@@ -4,13 +4,19 @@ import moment from 'moment-timezone';
 import { Moment } from 'moment';
 import { Demand } from 'ew-market-lib';
 import { Currency, TimeFrame, AssetType } from 'ew-utils-general-lib';
-import { getMarketConf, getMatcherConf, wait, getCurrentTime } from './utils';
+import { getMarketConf, getMatcherConf, wait, getCurrentTime, getAssetConf } from './utils';
+import { ConsumingAsset } from 'ew-asset-registry-lib';
 
 const matcherConf: SchemaDefs.IMatcherConf = getMatcherConf();
 const CHECK_INTERVAL: number = (matcherConf.dataSource as any).simulateSupplyEnergyGeneration.checkInterval;
 const BUYER = {
     ADDRESS: '0xcea1c413a570654fa85e78f7c17b755563fec5a5',
     PRIVATE_KEY: '0x5c0b28bff67916a879953c50b25c73827ae0b777a2ad13abba2e4b67f843294e'
+};
+
+const CONSUMING_ASSET_SMART_METER = {
+    ADDRESS: '0x1112ec367b20d2bffd40ee11523c3d36d61adf1b',
+    PRIVATE_KEY: '0x50764e302e4ed8ce624003deca642c03ce06934fe77585175c5576723f084d4c'
 };
 
 async function createDemand(
@@ -114,6 +120,42 @@ function calculateEnergyFromResponse(response: any): number {
     return Math.round(energy);
 }
 
+async function getConsumingAssetSmartMeterRead(
+    assetId: string = '0'
+) {
+    const conf = await getAssetConf();
+
+    let asset = await new ConsumingAsset.Entity(assetId, conf).sync();
+
+    return parseInt(asset.lastSmartMeterReadWh as any as string, 10);
+}
+
+async function addConsumingAssetSmartMeterRead(
+    meterReading: number,
+    assetId: string = '0'
+) {
+    console.log('-----------------------------------------------------------');
+
+    meterReading += await getConsumingAssetSmartMeterRead();
+
+    const conf = await getAssetConf(
+        CONSUMING_ASSET_SMART_METER.ADDRESS,
+        CONSUMING_ASSET_SMART_METER.PRIVATE_KEY
+    );
+
+    try {
+        let asset = await new ConsumingAsset.Entity(assetId, conf).sync();
+
+        await asset.saveSmartMeterRead(meterReading, '');
+        asset = await asset.sync();
+        conf.logger.verbose(`Consuming asset ${assetId} smart meter reading saved: ${meterReading}`);
+    } catch (e) {
+        conf.logger.error('Could not save smart meter reading for consuming asset\n' + e);
+    }
+
+    console.log('-----------------------------------------------------------\n');
+}
+
 async function fetchAndCreateDemand(
     startTime: Moment,
     endTime: Moment
@@ -128,6 +170,12 @@ async function fetchAndCreateDemand(
             startTime.format('x'),
             endTime.format('x')
         );
+
+        try {   
+            await addConsumingAssetSmartMeterRead(energy);
+        } catch (error) {
+            console.error('error when trying to save consuming asset smart meter read', error);
+        }
     }
 }
 
