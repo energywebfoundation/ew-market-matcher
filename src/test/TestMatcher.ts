@@ -374,10 +374,10 @@ describe('Test Matcher', async () => {
 
         it('a certificate has been split', async () => {
             const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-            await sleep(5000);
+            await sleep(10000);
 
             assert.equal(await Certificate.getCertificateListLength(conf), 4);
-        }).timeout(6000);
+        }).timeout(11000);
 
         it('asset owner is still the owner of the original certificate', async () => {
             const certificate = await new Certificate.Entity('1', conf).sync();
