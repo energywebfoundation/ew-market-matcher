@@ -151,7 +151,7 @@ describe('Test Matcher', async () => {
         const demandOffchainProps: Demand.IDemandOffChainProperties = {
             timeframe: TimeFrame.hourly,
             pricePerCertifiedWh: 10,
-            currency: Currency.Ether,
+            currency: Currency.USD,
             productingAsset: 0,
             consumingAsset: 0,
             locationCountry: 'string',

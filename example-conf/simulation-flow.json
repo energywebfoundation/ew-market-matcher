@@ -178,7 +178,7 @@
                     "assetId": 1,
                     "owner": "0x0",
                     "powerInW": 10,
-                    "purchasePrice": 0,
+                    "onChainDirectPurchasePrice": 0,
                     "escrow": ["0x492fd96a45b842fd1834b36c4055e5bc35c3dcb6"],
                     "approvedAddress": ""
                 }
@@ -202,7 +202,7 @@
                     "assetId": 0,
                     "owner": "0x0",
                     "powerInW": 10,
-                    "purchasePrice": 0,
+                    "onChainDirectPurchasePrice": 0,
                     "escrow": ["0x492fd96a45b842fd1834b36c4055e5bc35c3dcb6"],
                     "approvedAddress": ""
                 }
@@ -226,7 +226,7 @@
                     "assetId": 0,
                     "owner": "0x0",
                     "powerInW": 20,
-                    "purchasePrice": 0,
+                    "onChainDirectPurchasePrice": 0,
                     "escrow": ["0x492fd96a45b842fd1834b36c4055e5bc35c3dcb6"],
                     "approvedAddress": ""
                 }
