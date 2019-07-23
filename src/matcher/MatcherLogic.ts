@@ -9,6 +9,13 @@ function certificateMatchesDemand(certificate: Certificate.Entity, demand: Deman
         && certPricePerMwh <= demand.offChainProperties.maxPricePerMwh;
 }
 
+function supplyMatchesDemand(supply: Supply.Entity, demand: Demand.Entity): boolean {
+    const supplyPricePerMwh = (supply.offChainProperties.price / supply.offChainProperties.availableWh) * 1e6;
+
+    return demand.offChainProperties.targetWhPerPeriod <= supply.offChainProperties.availableWh
+        && supplyPricePerMwh <= demand.offChainProperties.maxPricePerMwh;
+}
+
 async function findMatchingDemandsForCertificate(
     certificate: Certificate.Entity,
     conf: Configuration.Entity,
@@ -54,13 +61,11 @@ async function findMatchingSuppliesForDemand(
     conf: Configuration.Entity,
     supplies?: Supply.Entity[]
 ): Promise<Supply.Entity[]> {
-    const demandedPower: number = Number(demand.offChainProperties.targetWhPerPeriod);
-
     if (!supplies) {
         supplies = await Supply.getAllSupplies(conf);
     }
 
-    return supplies.filter(supply => supply.offChainProperties.availableWh >= demandedPower);
+    return supplies.filter(supply => supplyMatchesDemand(supply, demand));
 }
 
 export {

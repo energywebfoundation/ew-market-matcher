@@ -120,37 +120,55 @@ describe('Test Matcher Logic', async () => {
     });
 
     describe('findMatchingSuppliesForDemand', async () => {
-        it('matches only when supply power higher or equal than demand', async () => {
-            const mockedDemand: Demand.Entity = mock(Demand.Entity);
-            when(mockedDemand.offChainProperties).thenReturn({
-                targetWhPerPeriod: 10
-            });
+        it('matches only when supply matches demand', async () => {
+            const testDemand = {
+                targetWhPerPeriod: 1e6,
+                maxPricePerMwh: 150
+            };
 
-            const mockedSupply: Supply.Entity = mock(Supply.Entity);
-            when(mockedSupply.offChainProperties).thenReturn({
-                availableWh: 9
-            }).thenReturn({
-                availableWh: 10
-            }).thenReturn({
-                availableWh: 11
-            }).thenReturn({
-                availableWh: 12
-            });
+            const testSupplies = [
+                // Both checks should fail
+                {
+                    availableWh: 0.9e6,
+                    price: 200
+                },
+                // Wh check should fail
+                {
+                    availableWh: 1.1e6,
+                    price: 200
+                },
+                // Price check should fail
+                {
+                    availableWh: 0.9e6,
+                    price: 100
+                },
+                // Both checks should pass
+                {
+                    availableWh: 1.1e6,
+                    price: 100
+                }
+            ];
+
+            const numShouldMatch = 1;
+
+            const mockedDemand: Demand.Entity = mock(Demand.Entity);
+            when(mockedDemand.offChainProperties).thenReturn(testDemand);
 
             const demand: Demand.Entity = instance(mockedDemand);
-            const supplies = [];
+            const suppliesToTest = [];
 
-            for (let i = 0; i < 4; i++) {
-                const supply: Supply.Entity = instance(mockedSupply);
-                supplies.push(supply);
+            for (const supply of testSupplies) {
+                const mockedSupply: Supply.Entity = mock(Supply.Entity);
+                when(mockedSupply.offChainProperties).thenReturn(supply);
+
+                const supplyInstance: Supply.Entity = instance(mockedSupply);
+                suppliesToTest.push(supplyInstance);
             }
 
-            const matchedSupplies = await findMatchingSuppliesForDemand(demand, conf, supplies);
-            assert.lengthOf(matchedSupplies, 3);
+            const matchedSupplies = await findMatchingSuppliesForDemand(demand, conf, suppliesToTest);
+            assert.lengthOf(matchedSupplies, numShouldMatch);
         });
     });
-
-    // TO-DO Finish mocking this test
 
     // describe('findMatchingAgreementsForCertificate', async () => {
     //     it('matches when certificate assetId equals agreement supply assetId', async () => {
@@ -159,23 +177,22 @@ describe('Test Matcher Logic', async () => {
 
     //         const mockedAgreement: Agreement.Entity = mock(Agreement.Entity);
     //         when(mockedAgreement.supplyId).thenReturn(1).thenReturn(2).thenReturn(3);
-            
-    //         const certificate: mockedCertificate = instance(mockedCertificate);
+
+    //         const certificate: Certificate.Entity = instance(mockedCertificate);
     //         const agreements = [];
 
     //         for (let i = 0; i < 3; i++) {
-    //             const agreement: mockedAgreement = instance(mockedAgreement);
+    //             const agreement: Agreement.Entity = instance(mockedAgreement);
     //             agreements.push(agreement);
     //         }
 
     //         console.log({
     //             certAssetId: certificate.assetId,
     //             agreementsAssetIds: agreements.map(agreement => agreement.supplyId)
-    //         })
+    //         });
 
     //         const matchedAgreements = await findMatchingAgreementsForCertificate(certificate, conf, agreements);
     //         assert.lengthOf(matchedAgreements, 1);
     //     });
     // });
-
 });
