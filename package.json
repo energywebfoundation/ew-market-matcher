@@ -5,7 +5,7 @@
   "main": "dist/js/src/exports.js",
   "types": "dist/js/src/exports.d.ts",
   "scripts": {
-    "test": "npm run build && mocha --exit -r ts-node/register src/test/TestMatcherLogic.ts",
+    "test": "npm run build && mocha --exit -r ts-node/register src/test/*.ts",
     "start": "npm run build && node dist/js/src/index.js",
     "debug": "node --inspect-brk dist/js/src/index.js",
     "start-test-backend": "node node_modules/ew-utils-testbackend/dist/js/src/index.js",
