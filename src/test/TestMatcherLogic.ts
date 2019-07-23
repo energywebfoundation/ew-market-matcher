@@ -171,42 +171,36 @@ describe('Test Matcher Logic', async () => {
     });
 
     // TO-DO Finish mocking this test
+    describe('findMatchingAgreementsForCertificate', async () => {
+        xit('matches when certificate assetId equals agreement supply assetId', async () => {
+            const testCertificate = {
+                assetId: 0
+            };
 
-    // describe('findMatchingAgreementsForCertificate', async () => {
-    //     it('matches when certificate assetId equals agreement supply assetId', async () => {
-    //         const testCertificate = {
-    //             assetId: 0
-    //         };
+            const testAgreements = [
+                { supplyId: 1 },
+                { supplyId: 2 },
+                { supplyId: 3 }
+            ];
 
-    //         const testAgreements = [
-    //             { supplyId: 1 },
-    //             { supplyId: 2 },
-    //             { supplyId: 3 }
-    //         ];
+            const expectedMatches = 1;
 
-    //         const expectedMatches = 1;
+            const mockedCertificate: Certificate.Entity = mock(Certificate.Entity);
+            when(mockedCertificate.assetId).thenReturn(testCertificate.assetId);
 
-    //         const mockedCertificate: Certificate.Entity = mock(Certificate.Entity);
-    //         when(mockedCertificate.assetId).thenReturn(testCertificate.assetId);
+            const certificate: Certificate.Entity = instance(mockedCertificate);
+            const agreementsToTest = [];
 
-    //         const certificate: Certificate.Entity = instance(mockedCertificate);
-    //         const agreementsToTest = [];
+            for (const agreement of testAgreements) {
+                const mockedAgreement: Agreement.Entity = mock(Agreement.Entity);
+                when(mockedAgreement.supplyId).thenReturn(agreement.supplyId);
 
-    //         for (const agreement of testAgreements) {
-    //             const mockedAgreement: Agreement.Entity = mock(Agreement.Entity);
-    //             when(mockedAgreement.supplyId).thenReturn(agreement.supplyId);
+                const agreementInstance: Agreement.Entity = instance(mockedAgreement);
+                agreementsToTest.push(agreementInstance);
+            }
 
-    //             const agreementInstance: Agreement.Entity = instance(mockedAgreement);
-    //             agreementsToTest.push(agreementInstance);
-    //         }
-
-    //         console.log({
-    //             certAssetId: certificate.assetId,
-    //             agreementsAssetIds: agreementsToTest.map(agreement => agreement.supplyId)
-    //         });
-
-    //         const matchedAgreements = await findMatchingAgreementsForCertificate(certificate, conf, agreementsToTest);
-    //         assert.lengthOf(matchedAgreements, expectedMatches);
-    //     });
-    // });
+            const matchedAgreements = await findMatchingAgreementsForCertificate(certificate, conf, agreementsToTest);
+            assert.lengthOf(matchedAgreements, expectedMatches);
+        });
+    });
 });
