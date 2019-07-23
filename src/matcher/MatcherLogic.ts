@@ -2,39 +2,42 @@ import { Configuration } from 'ew-utils-general-lib';
 import { Certificate } from 'ew-origin-lib';
 import { Supply, Demand, Agreement } from 'ew-market-lib';
 
-const findMatchingDemandsForCertificate = async (
+function certificateMatchesDemand(certificate: Certificate.Entity, demand: Demand.Entity): boolean {
+    const certPricePerMwh = (certificate.onChainDirectPurchasePrice / certificate.powerInW) * 1e6;
+
+    return demand.offChainProperties.targetWhPerPeriod <= Number(certificate.powerInW)
+        && certPricePerMwh <= demand.offChainProperties.maxPricePerMwh;
+}
+
+async function findMatchingDemandsForCertificate(
     certificate: Certificate.Entity,
     conf: Configuration.Entity,
     demands?: Demand.Entity[]
-): Promise<Demand.Entity[]> => {
-    const certificatePower: number = Number(certificate.powerInW);
-
+): Promise<Demand.Entity[]> {
     if (!demands) {
         demands = await Demand.getAllDemands(conf);
     }
 
-    return demands.filter(demand => demand.offChainProperties.targetWhPerPeriod <= certificatePower);
-};
+    return demands.filter(demand => certificateMatchesDemand(certificate, demand));
+}
 
-const findMatchingCertificatesForDemand = async (
+async function findMatchingCertificatesForDemand(
     demand: Demand.Entity,
     conf: Configuration.Entity,
     certs?: Certificate.Entity[]
-): Promise<Certificate.Entity[]> => {
-    const demandedPower: number = Number(demand.offChainProperties.targetWhPerPeriod);
-
+): Promise<Certificate.Entity[]> {
     if (!certs) {
         certs = await Certificate.getActiveCertificates(conf);
     }
 
-    return certs.filter(cert => cert.powerInW >= demandedPower);
-};
+    return certs.filter(certificate => certificateMatchesDemand(certificate, demand));
+}
 
-const findMatchingAgreementsForCertificate = async (
+async function findMatchingAgreementsForCertificate (
     certificate: Certificate.Entity,
     conf: Configuration.Entity,
     agreements?: Agreement.Entity[]
-): Promise<Agreement.Entity[]> => {
+): Promise<Agreement.Entity[]> {
     if (!agreements) {
         agreements =  await Agreement.getAllAgreements(conf);
     }
@@ -44,13 +47,13 @@ const findMatchingAgreementsForCertificate = async (
 
         return supply.assetId.toString() === certificate.assetId.toString();
     });
-};
+}
 
-const findMatchingSuppliesForDemand = async (
+async function findMatchingSuppliesForDemand(
     demand: Demand.Entity,
     conf: Configuration.Entity,
     supplies?: Supply.Entity[]
-): Promise<Supply.Entity[]> => {
+): Promise<Supply.Entity[]> {
     const demandedPower: number = Number(demand.offChainProperties.targetWhPerPeriod);
 
     if (!supplies) {
@@ -58,7 +61,7 @@ const findMatchingSuppliesForDemand = async (
     }
 
     return supplies.filter(supply => supply.offChainProperties.availableWh >= demandedPower);
-};
+}
 
 export {
     findMatchingDemandsForCertificate,

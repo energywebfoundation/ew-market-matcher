@@ -210,7 +210,6 @@ export class BlockchainModeController extends Controller {
             }`
         );
         await certificate.transferFrom(demand.demandOwner);
-
     }
 
     async getCurrentPeriod(startDate: number, timeFrame: TimeFrame): Promise<number> {
