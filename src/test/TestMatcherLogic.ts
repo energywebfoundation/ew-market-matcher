@@ -170,29 +170,43 @@ describe('Test Matcher Logic', async () => {
         });
     });
 
+    // TO-DO Finish mocking this test
+
     // describe('findMatchingAgreementsForCertificate', async () => {
     //     it('matches when certificate assetId equals agreement supply assetId', async () => {
-    //         const mockedCertificate: Certificate.Entity = mock(Certificate.Entity);
-    //         when(mockedCertificate.assetId).thenReturn(0);
+    //         const testCertificate = {
+    //             assetId: 0
+    //         };
 
-    //         const mockedAgreement: Agreement.Entity = mock(Agreement.Entity);
-    //         when(mockedAgreement.supplyId).thenReturn(1).thenReturn(2).thenReturn(3);
+    //         const testAgreements = [
+    //             { supplyId: 1 },
+    //             { supplyId: 2 },
+    //             { supplyId: 3 }
+    //         ];
+
+    //         const expectedMatches = 1;
+
+    //         const mockedCertificate: Certificate.Entity = mock(Certificate.Entity);
+    //         when(mockedCertificate.assetId).thenReturn(testCertificate.assetId);
 
     //         const certificate: Certificate.Entity = instance(mockedCertificate);
-    //         const agreements = [];
+    //         const agreementsToTest = [];
 
-    //         for (let i = 0; i < 3; i++) {
-    //             const agreement: Agreement.Entity = instance(mockedAgreement);
-    //             agreements.push(agreement);
+    //         for (const agreement of testAgreements) {
+    //             const mockedAgreement: Agreement.Entity = mock(Agreement.Entity);
+    //             when(mockedAgreement.supplyId).thenReturn(agreement.supplyId);
+
+    //             const agreementInstance: Agreement.Entity = instance(mockedAgreement);
+    //             agreementsToTest.push(agreementInstance);
     //         }
 
     //         console.log({
     //             certAssetId: certificate.assetId,
-    //             agreementsAssetIds: agreements.map(agreement => agreement.supplyId)
+    //             agreementsAssetIds: agreementsToTest.map(agreement => agreement.supplyId)
     //         });
 
-    //         const matchedAgreements = await findMatchingAgreementsForCertificate(certificate, conf, agreements);
-    //         assert.lengthOf(matchedAgreements, 1);
+    //         const matchedAgreements = await findMatchingAgreementsForCertificate(certificate, conf, agreementsToTest);
+    //         assert.lengthOf(matchedAgreements, expectedMatches);
     //     });
     // });
 });
