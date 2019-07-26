@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { mock, instance, when, spy, reset } from 'ts-mockito';
 
-import { Configuration } from 'ew-utils-general-lib';
+import { Configuration, Currency } from 'ew-utils-general-lib';
 import { Certificate } from 'ew-origin-lib';
 import { Demand, Agreement, Supply } from 'ew-market-lib';
 
@@ -20,29 +20,43 @@ describe('Test Matcher Logic', async () => {
         it('matches only when demand matches certificate', async () => {
             const testCertificate = {
                 powerInW: 1e6,
-                onChainDirectPurchasePrice: 150
+                offChainSettlementOptions: {
+                    price: 150,
+                    currency: Currency.EUR
+                },
+                acceptedToken: '0x0000000000000000000000000000000000000000'
             };
 
             const testDemands = [
-                // Both checks should fail
+                // All checks should fail
                 {
                     targetWhPerPeriod: 1.5e6,
-                    maxPricePerMwh: 100
+                    maxPricePerMwh: 100,
+                    currency: Currency.USD
                 },
                 // Wh check should fail
                 {
                     targetWhPerPeriod: 1e5,
-                    maxPricePerMwh: 100
+                    maxPricePerMwh: 100,
+                    currency: Currency.EUR
                 },
                 // Price check should fail
                 {
                     targetWhPerPeriod: 1.5e6,
-                    maxPricePerMwh: 200
+                    maxPricePerMwh: 200,
+                    currency: Currency.EUR
                 },
-                // Both checks should pass
+                // Currency check should fail
                 {
                     targetWhPerPeriod: 1e5,
-                    maxPricePerMwh: 200
+                    maxPricePerMwh: 200,
+                    currency: Currency.USD
+                },
+                // All checks should pass
+                {
+                    targetWhPerPeriod: 1e5,
+                    maxPricePerMwh: 200,
+                    currency: Currency.EUR
                 }
             ];
 
@@ -50,7 +64,8 @@ describe('Test Matcher Logic', async () => {
 
             const mockedCertificate: Certificate.Entity = mock(Certificate.Entity);
             when(mockedCertificate.powerInW).thenReturn(testCertificate.powerInW);
-            when(mockedCertificate.onChainDirectPurchasePrice).thenReturn(testCertificate.onChainDirectPurchasePrice);
+            when(mockedCertificate.offChainSettlementOptions).thenReturn(testCertificate.offChainSettlementOptions);
+            when(mockedCertificate.acceptedToken).thenReturn(testCertificate.acceptedToken);
 
             const certificate: Certificate.Entity = instance(mockedCertificate);
             const demandsToTest = [];
@@ -71,29 +86,70 @@ describe('Test Matcher Logic', async () => {
         it('matches only when certificate matches demand', async () => {
             const testDemand = {
                 targetWhPerPeriod: 1e6,
-                maxPricePerMwh: 150
+                maxPricePerMwh: 150,
+                currency: Currency.EUR
             };
 
             const testCertificates = [
-                // Both checks should fail
+                // All checks should fail
                 {
-                    powerInW: 0.9e6,
-                    onChainDirectPurchasePrice: 200
+                    powerInW: 1e6,
+                    offChainSettlementOptions: {
+                        price: 200,
+                        currency: Currency.EUR
+                    },
+                    acceptedToken: '0x0000000000000000000000000000000000000000',
+                    forSale: true
                 },
                 // Wh check should fail
                 {
                     powerInW: 1.1e6,
-                    onChainDirectPurchasePrice: 200
+                    offChainSettlementOptions: {
+                        price: 200,
+                        currency: Currency.EUR
+                    },
+                    acceptedToken: '0x0000000000000000000000000000000000000000',
+                    forSale: true
                 },
                 // Price check should fail
                 {
                     powerInW: 0.9e6,
-                    onChainDirectPurchasePrice: 100
+                    offChainSettlementOptions: {
+                        price: 100,
+                        currency: Currency.EUR
+                    },
+                    acceptedToken: '0x0000000000000000000000000000000000000000',
+                    forSale: true
                 },
-                // Both checks should pass
+                // Currency check should fail
                 {
                     powerInW: 1.1e6,
-                    onChainDirectPurchasePrice: 100
+                    offChainSettlementOptions: {
+                        price: 100,
+                        currency: Currency.USD
+                    },
+                    acceptedToken: '0x0000000000000000000000000000000000000000',
+                    forSale: true
+                },
+                // For sale check should fail
+                {
+                    powerInW: 1.1e6,
+                    offChainSettlementOptions: {
+                        price: 100,
+                        currency: Currency.EUR
+                    },
+                    acceptedToken: '0x0000000000000000000000000000000000000000',
+                    forSale: false
+                },
+                // All checks should pass
+                {
+                    powerInW: 1.1e6,
+                    offChainSettlementOptions: {
+                        price: 100,
+                        currency: Currency.EUR
+                    },
+                    acceptedToken: '0x0000000000000000000000000000000000000000',
+                    forSale: true
                 }
             ];
 
@@ -108,7 +164,9 @@ describe('Test Matcher Logic', async () => {
             for (const certificate of testCertificates) {
                 const mockedCertificate: Certificate.Entity = mock(Certificate.Entity);
                 when(mockedCertificate.powerInW).thenReturn(certificate.powerInW);
-                when(mockedCertificate.onChainDirectPurchasePrice).thenReturn(certificate.onChainDirectPurchasePrice);
+                when(mockedCertificate.offChainSettlementOptions).thenReturn(certificate.offChainSettlementOptions);
+                when(mockedCertificate.acceptedToken).thenReturn(certificate.acceptedToken);
+                when(mockedCertificate.forSale).thenReturn(certificate.forSale);
 
                 const certificateInstance: Certificate.Entity = instance(mockedCertificate);
                 certificatesToTest.push(certificateInstance);
