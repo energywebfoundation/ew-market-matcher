@@ -148,6 +148,19 @@ export class ConfigurableReferenceMatcher extends Matcher {
         return { split: false, demand: null };
     }
 
+    async notifyDemands(
+        demands: Demand.Entity[],
+        certificate: Certificate.Entity
+    ): Promise<boolean> {
+        const matchingDemands = await findMatchingDemandsForCertificate(certificate, this.controller.conf, demands);
+
+        for (const demand of matchingDemands) {
+            console.log('Notifying demand: ' + demand.id);
+        }
+
+        return true;
+    }
+
     private sortAgreements(a: Agreement.Entity, b: Agreement.Entity) {
         // TODO: change
         const rule = this.ruleConf.rule as RuleConf.ISimpleHierarchyRule;

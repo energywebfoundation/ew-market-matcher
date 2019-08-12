@@ -47,6 +47,13 @@ export class SimpleMatcher extends Matcher {
         throw new Error(METHOD_NOT_IMPLEMENTED);
     }
 
+    async notifyDemands(
+        demands: Demand.Entity[],
+        certificate: Certificate.Entity,
+    ): Promise<boolean> {
+        throw new Error(METHOD_NOT_IMPLEMENTED);
+    }
+
     matchDemand(certificate: Certificate.Entity, demand: Demand.Entity[]) {
         throw new Error(METHOD_NOT_IMPLEMENTED);
     }

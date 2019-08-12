@@ -57,6 +57,10 @@ export abstract class Controller {
         this.matcher = matcher;
     }
 
+    async notifyDemands(certificate: Certificate.Entity) {
+        await this.matcher.notifyDemands(this.demands, certificate);
+    }
+
     async matchTrigger(certificate: Certificate.Entity) {
         // const filteredAgreements = await Filter.filterAgreements(this, this.agreements, certificate);
         await this.matcher.match(certificate, this.agreements, this.demands);

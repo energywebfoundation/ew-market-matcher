@@ -32,6 +32,11 @@ export abstract class Matcher {
         demands: Demand.Entity[]
     ): Promise<{ split: boolean; demand: Demand.Entity }>;
 
+    abstract async notifyDemands(
+        demands: Demand.Entity[],
+        certificate: Certificate.Entity
+    ): Promise<boolean>;
+
     async match(
         certificate: Certificate.Entity,
         agreements: Agreement.Entity[],
