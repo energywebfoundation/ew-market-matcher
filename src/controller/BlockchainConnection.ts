@@ -115,7 +115,6 @@ export const initEventHandling = async (controller: Controller, conf: Configurat
         ).sync();
 
         await controller.notifyDemands(newCertificate);
-
         await controller.matchTrigger(newCertificate);
     });
 
