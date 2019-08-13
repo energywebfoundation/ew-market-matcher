@@ -24,14 +24,21 @@ import * as ConfigurationFileInterpreter from './ConfigurationFileInterpreter';
 import * as RuleConf from '../schema-defs/RuleConf';
 import { logger } from '../Logger';
 
+import { IEmailServiceProvider, EmailServiceProvider } from '../services/email.service';
+import { NodemailerAdapter } from '../services/email/nodemailer.adapter';
+
 export class ConfigurableReferenceMatcher extends Matcher {
     private ruleConf: RuleConf.IRuleConf;
     private propertyRanking: string[];
+    private emailService: IEmailServiceProvider;
 
     constructor(ruleConf: RuleConf.IRuleConf) {
         super();
         this.ruleConf = ruleConf;
         this.propertyRanking = ConfigurationFileInterpreter.getRanking(this.ruleConf);
+
+        const adapter = new NodemailerAdapter();
+        this.emailService = new EmailServiceProvider(adapter, 'test1@gmail.com');
     }
 
     setController(controller: Controller) {
@@ -155,6 +162,7 @@ export class ConfigurableReferenceMatcher extends Matcher {
         const matchingDemands = await findMatchingDemandsForCertificate(certificate, this.controller.conf, demands);
 
         for (const demand of matchingDemands) {
+            this.emailService.send(['test2@gmail.com'], 'Subject', '<strong>body</strong>');
             console.log('Notifying demand: ' + demand.id);
         }
 
